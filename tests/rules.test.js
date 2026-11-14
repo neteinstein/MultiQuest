@@ -76,8 +76,24 @@ test('static banks are well formed', () => {
       assert.equal(e.enA.length, 4, topic + ' #' + i);
       assert.equal(new Set(e.ptA).size, 4, topic + ' #' + i + ' ' + e.ptQ);
       assert.equal(new Set(e.enA).size, 4, topic + ' #' + i + ' ' + e.enQ);
+      assert.ok([1, 2, 3, 4].includes(e.lvl), topic + ' #' + i + ' has no level');
     });
+    for (let lvl = 1; lvl <= 4; lvl++) {
+      assert.ok(Q.banks[topic].filter((e) => e.lvl === lvl).length >= 5, topic + ' needs questions at level ' + lvl);
+    }
   });
+});
+
+test('dealer prefers the requested level', () => {
+  const d = new Q.Dealer();
+  for (let lvl = 1; lvl <= 4; lvl++) {
+    for (let i = 0; i < 5; i++) {
+      const q = d.next('history', lvl);
+      const idx = +q.key.split('-s-')[1];
+      assert.equal(Q.banks.history[idx].lvl, lvl, 'history level ' + lvl);
+      assert.equal(q.level, lvl);
+    }
+  }
 });
 
 test('dealer never repeats a question within a game', () => {
@@ -86,7 +102,7 @@ test('dealer never repeats a question within a game', () => {
     const seen = new Set();
     const n = topic === 'math' ? 150 : Q.banks[topic].length;
     for (let i = 0; i < n; i++) {
-      const q = d.next(topic, 1 + (i % 75));
+      const q = d.next(topic, 1 + (i % 4));
       checkQuestion(q);
       assert.equal(q.topic, topic);
       assert.ok(!seen.has(q.key), 'repeated ' + q.key);
@@ -96,13 +112,15 @@ test('dealer never repeats a question within a game', () => {
 });
 
 test('maths answers are correct', () => {
-  for (let i = 0; i < 2000; i++) {
-    const q = Q.genMath(Math.random, 1 + (i % 75));
+  for (let i = 0; i < 4000; i++) {
+    const q = Q.genMath(Math.random, 1 + (i % 4));
     checkQuestion(q);
     const text = q.q.en;
     const ans = Number(q.options[q.correct].en);
     let m;
-    if ((m = text.match(/^What is (\d+) \+ (\d+) × (\d+)\?$/))) assert.equal(ans, +m[1] + m[2] * m[3]);
+    if ((m = text.match(/^What is \((\d+) \+ (\d+)\) × (\d+) − (\d+)\?$/))) assert.equal(ans, (+m[1] + +m[2]) * m[3] - m[4]);
+    else if ((m = text.match(/^(\d+)x \+ (\d+) = (\d+)\. What is x\?$/))) assert.equal(m[1] * ans + +m[2], +m[3]);
+    else if ((m = text.match(/^What is (\d+) \+ (\d+) × (\d+)\?$/))) assert.equal(ans, +m[1] + m[2] * m[3]);
     else if ((m = text.match(/^What is (\d+) \+ (\d+)\?$/))) assert.equal(ans, +m[1] + +m[2]);
     else if ((m = text.match(/^What is (\d+) − (\d+)\?$/))) assert.equal(ans, m[1] - m[2]);
     else if ((m = text.match(/^What is (\d+) × (\d+)\?$/))) assert.equal(ans, m[1] * m[2]);
@@ -115,7 +133,8 @@ test('maths answers are correct', () => {
     else if ((m = text.match(/^\? \+ (\d+) = (\d+)\./))) assert.equal(ans, m[2] - m[1]);
     else if ((m = text.match(/^What number comes next: ([\d, ]+), …\?$/))) {
       const s = m[1].split(', ').map(Number);
-      assert.equal(ans, s[3] + (s[1] - s[0]));
+      const arithmetic = s[1] - s[0] === s[2] - s[1];
+      assert.equal(ans, arithmetic ? s[3] + (s[1] - s[0]) : s[3] * (s[1] / s[0]));
     } else if ((m = text.match(/^What is (one|\d+) (third|quarter|fifth|tenth)s? of (\d+)\?$/))) {
       const den = { third: 3, quarter: 4, fifth: 5, tenth: 10 }[m[2]];
       const num = m[1] === 'one' ? 1 : +m[1];

@@ -17,6 +17,7 @@ Online: https://neteinstein.github.io/MultiQuest/ (publicado automaticamente pel
 - Cada casa tem um tema aleatório: **Matemática, História de Portugal, Ciências, Português, Inglês**.
   A pergunta é sempre diferente (não se repete durante o jogo). 4 opções, só 1 certa.
   - Acertou → fica na casa. Errou → volta para onde estava. Depois passa a vez.
+- Cada jogador escolhe a sua dificuldade: **Fácil, Médio, Difícil ou Génio**. As perguntas (e a matemática) seguem esse nível.
 - Para ganhar é preciso chegar **exatamente** à casa 75 e acertar a pergunta. Se o dado passar da 75, recua o excesso a partir da 75.
 - Se um jogador chegar a uma casa onde já está outro, **quem lá estava primeiro vai para a casa 25**.
 
@@ -35,6 +36,9 @@ Online: https://neteinstein.github.io/MultiQuest/ (publicado automaticamente pel
 Guerreiro, Lince, Árvore, Pedra, Luís de Camões, Shakespeare e Bola de futebol — cada um com o seu movimento
 (marcha, salta, balança, rebola, navega, rodopia, quica). Cada jogador tem uma cor diferente.
 O tema do tabuleiro muda conforme o avatar de quem está a jogar.
+
+Durante o jogo o ecrã mostra só o tabuleiro (ajustado ao ecrã, sem scroll) e, em baixo, o jogador da vez com o dado.
+O botão ☰ abre os jogadores, a legenda e o histórico.
 
 Atalhos: **Espaço** para lançar o dado, **1–4** para responder.
 

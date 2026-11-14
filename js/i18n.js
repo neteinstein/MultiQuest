@@ -33,6 +33,13 @@
       winner: '{name} chegou à casa 75 e venceu!',
       confirmNew: 'Começar um novo jogo? O jogo atual será perdido.',
       close: 'Fechar',
+      more: 'Ver jogadores, legenda e histórico',
+      details: 'Detalhes do jogo',
+      difficulty: 'Dificuldade',
+      diff_1: 'Fácil',
+      diff_2: 'Médio',
+      diff_3: 'Difícil',
+      diff_4: 'Génio',
 
       topic_math: 'Matemática',
       topic_history: 'História de Portugal',
@@ -84,6 +91,7 @@
         '<li>Na sua vez, cada jogador lança o dado (1–6) e avança esse número de casas.</li>' +
         '<li>Cada casa tem um tema: Matemática, História de Portugal, Ciências, Português ou Inglês. A pergunta é sempre diferente.</li>' +
         '<li>Há 4 opções e só 1 está certa. Acertou? Fica na casa. Errou? Volta para onde estava. Depois passa a vez.</li>' +
+        '<li>Cada jogador escolhe a sua dificuldade (Fácil, Médio, Difícil ou Génio) e recebe perguntas desse nível.</li>' +
         '<li>Para ganhar é preciso chegar exatamente à casa 75 e acertar a pergunta. Se o dado passar da 75, recua o excesso a partir da 75.</li>' +
         '<li>Se chegar a uma casa onde já está outro jogador, quem lá estava primeiro vai para a casa 25.</li>' +
         '</ul>' +
@@ -95,7 +103,8 @@
         '<li><b>10</b> — fica 1 vez sem jogar.</li>' +
         '<li><b>7, 12 e 73</b> — teletransporte para a casa 21.</li>' +
         '</ul>' +
-        '<p>O tema do tabuleiro muda conforme o avatar de quem está a jogar.</p>'
+        '<p>O tema do tabuleiro muda conforme o avatar de quem está a jogar.</p>' +
+        '<p>Atalhos: Espaço ou Enter para lançar o dado, teclas 1–4 para responder.</p>'
     },
     en: {
       subtitle: 'The quiz board game',
@@ -127,6 +136,13 @@
       winner: '{name} reached house 75 and won!',
       confirmNew: 'Start a new game? The current game will be lost.',
       close: 'Close',
+      more: 'Show players, legend and history',
+      details: 'Game details',
+      difficulty: 'Difficulty',
+      diff_1: 'Easy',
+      diff_2: 'Medium',
+      diff_3: 'Hard',
+      diff_4: 'Genius',
 
       topic_math: 'Maths',
       topic_history: 'Portuguese History',
@@ -178,6 +194,7 @@
         '<li>On your turn, roll the die (1–6) and move that many houses forward.</li>' +
         '<li>Every house has a topic: Maths, Portuguese History, Science, Portuguese or English. The question is always a new one.</li>' +
         '<li>There are 4 options and only 1 is right. Right? You stay. Wrong? You go back to where you were. Then the next player plays.</li>' +
+        '<li>Each player picks their own difficulty (Easy, Medium, Hard or Genius) and gets questions at that level.</li>' +
         '<li>To win you must land exactly on house 75 and answer correctly. If the roll goes past 75 you move back the excess from 75.</li>' +
         '<li>If you land on a house where another player already is, the player who was there first goes to house 25.</li>' +
         '</ul>' +
@@ -189,7 +206,8 @@
         '<li><b>10</b> — miss 1 turn.</li>' +
         '<li><b>7, 12 and 73</b> — teleport to house 21.</li>' +
         '</ul>' +
-        '<p>The board theme changes to match the avatar of whoever is playing.</p>'
+        '<p>The board theme changes to match the avatar of whoever is playing.</p>' +
+        '<p>Shortcuts: Space or Enter to roll, keys 1–4 to answer.</p>'
     }
   };
 
