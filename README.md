@@ -53,5 +53,11 @@ Atalhos: **Espaço** para lançar o dado, **1–4** para responder.
 ## Testes
 
 ```sh
-node --test tests/*.test.js
+npm test              # regras e banco de perguntas
+npm run test:smoke    # joga um jogo completo no Chromium (precisa do Playwright)
 ```
+
+## Integração contínua e publicação
+
+- **Pull requests** — `.github/workflows/ci.yml` valida cada PR: sintaxe, testes unitários e um jogo completo num browser headless.
+- **Merge para `main`** — `.github/workflows/pages.yml` corre a mesma validação e, se passar, publica no GitHub Pages.
