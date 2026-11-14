@@ -28,6 +28,12 @@ jobs:
         run: |
           mkdir -p _site
           cp -r index.html css js _site/
+          # Cache-bust: tag every script and stylesheet with this commit so
+          # browsers fetch the new files right after a deploy.
+          v="${GITHUB_SHA::8}"
+          sed -i -E "s#(src=\"js/[A-Za-z0-9_-]+\.js)\"#\1?v=$v\"#g; s#(href=\"css/[A-Za-z0-9_-]+\.css)\"#\1?v=$v\"#g" _site/index.html
+          grep -c "?v=$v" _site/index.html
+          if grep -E '(src="js/|href="css/)[^"?]+"' _site/index.html; then echo "un-versioned asset left"; exit 1; fi
 
       - uses: actions/configure-pages@v5
 
