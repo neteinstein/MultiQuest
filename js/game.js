@@ -643,10 +643,43 @@
       var ok = s.answered === q.correct;
       fb.className = 'q-feedback ' + (ok ? 'good' : 'bad');
       fb.textContent = ok
-        ? t('msg_correctShort') + ' ' + t('msg_correct', { name: nameOf(s.p), n: s.p.pos })
+        ? t('msg_correct', { name: nameOf(s.p), n: s.p.pos })
         : t('msg_wrongShort') + ' ' + t('msg_rightWas', { a: q.options[q.correct] });
       $('qContinue').classList.remove('hidden');
     }
+    renderContinue();
+  }
+
+  // After a correct answer the question closes by itself after a short countdown.
+  var AUTO_CLOSE_SECONDS = 3;
+  var autoTimer = null;
+
+  function renderContinue() {
+    var s = state && state.question;
+    var btn = $('qContinue');
+    var counting = !!(s && s.countdown != null);
+    btn.textContent = counting ? t('continue') + ' (' + s.countdown + ')' : t('continue');
+    btn.classList.toggle('counting', counting);
+  }
+
+  function startAutoClose() {
+    var s = state.question;
+    s.countdown = AUTO_CLOSE_SECONDS;
+    var btn = $('qContinue');
+    btn.style.setProperty('--auto-ms', AUTO_CLOSE_SECONDS * 1000 + 'ms');
+    retrigger(btn, 'counting');
+    renderContinue();
+    autoTimer = setInterval(function () {
+      if (!state || state.question !== s) return stopAutoClose();
+      s.countdown--;
+      if (s.countdown <= 0) closeQuestion();
+      else renderContinue();
+    }, 1000);
+  }
+
+  function stopAutoClose() {
+    if (autoTimer) clearInterval(autoTimer);
+    autoTimer = null;
   }
 
   function answer(i) {
@@ -656,13 +689,16 @@
     renderQuestion();
     var modal = document.querySelector('.question-modal');
     retrigger(modal, i === s.q.correct ? 'cheer' : 'shake');
+    if (i === s.q.correct) startAutoClose();
     $('qContinue').focus();
   }
 
   function closeQuestion() {
     var s = state && state.question;
     if (!s || s.answered == null) return;
+    stopAutoClose();
     state.question = null;
+    $('qContinue').classList.remove('counting');
     $('questionOverlay').classList.add('hidden');
     s.resolve(s.answered === s.q.correct);
   }
@@ -711,6 +747,7 @@
 
   // ----------------------------------------------------------------- wiring
   function goToSetup() {
+    stopAutoClose();
     state = null;
     $('game').classList.add('hidden');
     $('setup').classList.remove('hidden');

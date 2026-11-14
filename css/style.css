@@ -560,6 +560,13 @@ body.in-game main { flex: 1; min-height: 0; display: flex; flex-direction: colum
 .q-feedback { min-height: 1.4em; margin-top: 12px; font-weight: 700; }
 .q-feedback.good { color: var(--good); }
 .q-feedback.bad { color: var(--bad); }
+#qContinue { position: relative; overflow: hidden; }
+#qContinue.counting::after {
+  content: ""; position: absolute; left: 0; bottom: 0; height: 4px; width: 100%;
+  background: rgba(255,255,255,.75); transform-origin: left;
+  animation: countdown var(--auto-ms, 3s) linear forwards;
+}
+@keyframes countdown { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 .q-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; gap: 10px; }
 
 .win-modal { text-align: center; overflow: hidden; }
