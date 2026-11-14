@@ -42,53 +42,61 @@
       </div>
     </section>
 
-    <!-- Game -->
+    <!-- Game: board fills the screen, current player + die at the bottom -->
     <section id="game" class="screen hidden">
-      <div class="board-area">
+      <div class="board-area" id="boardArea">
         <div class="board-wrap" id="boardWrap">
           <div id="board" class="board"></div>
           <div id="tokens" class="tokens"></div>
         </div>
       </div>
-      <aside class="panel">
-        <div class="card turn-card" id="turnCard">
-          <div class="turn-label" data-i18n="turnOf"></div>
-          <div class="turn-player">
-            <div class="turn-avatar" id="turnAvatar"></div>
-            <div>
-              <div class="turn-name" id="turnName"></div>
-              <div class="turn-pos" id="turnPos"></div>
-            </div>
+      <div class="bottombar" id="turnCard">
+        <div class="turn-avatar" id="turnAvatar"></div>
+        <div class="turn-info">
+          <div class="turn-line">
+            <span class="turn-name" id="turnName"></span>
+            <span class="turn-pos" id="turnPos"></span>
+            <span class="diff-badge" id="turnDiff"></span>
           </div>
-          <div class="dice-row">
-            <div class="die" id="die" aria-live="polite"></div>
-            <button type="button" class="primary big" id="rollBtn" data-i18n="roll"></button>
-          </div>
-          <div class="hint" data-i18n="rollHint"></div>
           <div class="message" id="message" aria-live="polite"></div>
         </div>
-        <div class="card">
-          <h3 data-i18n="players"></h3>
-          <ol class="player-list" id="playerList"></ol>
-        </div>
-        <div class="card">
-          <h3 data-i18n="legend"></h3>
-          <ul class="legend" id="legend"></ul>
-        </div>
-        <div class="card log-card">
-          <h3 data-i18n="log"></h3>
-          <ol class="log" id="log"></ol>
-        </div>
-      </aside>
+        <button type="button" class="roll-btn" id="rollBtn" data-i18n-aria="roll">
+          <span class="die" id="die" aria-hidden="true"></span>
+          <span class="roll-label" data-i18n="roll"></span>
+        </button>
+        <button type="button" class="icon-btn" id="moreBtn" data-i18n-aria="more" data-i18n-title="more" aria-haspopup="dialog">☰</button>
+      </div>
     </section>
   </main>
+
+  <!-- Details drawer -->
+  <div class="overlay drawer-overlay hidden" id="drawer">
+    <div class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+      <div class="drawer-head">
+        <h2 id="drawerTitle" data-i18n="details"></h2>
+        <button type="button" class="icon-btn" id="drawerClose" data-i18n-aria="close">✕</button>
+      </div>
+      <div class="card">
+        <h3 data-i18n="players"></h3>
+        <ol class="player-list" id="playerList"></ol>
+      </div>
+      <div class="card">
+        <h3 data-i18n="legend"></h3>
+        <ul class="legend" id="legend"></ul>
+      </div>
+      <div class="card log-card">
+        <h3 data-i18n="log"></h3>
+        <ol class="log" id="log"></ol>
+      </div>
+    </div>
+  </div>
 
   <!-- Question -->
   <div class="overlay hidden" id="questionOverlay" role="dialog" aria-modal="true" aria-labelledby="qText">
     <div class="modal question-modal">
       <div class="q-head">
         <span class="topic-badge" id="qTopic"></span>
-        <span class="q-house" id="qHouse"></span>
+        <span class="q-meta"><span class="diff-badge" id="qDiff"></span> <span class="q-house" id="qHouse"></span></span>
       </div>
       <div class="q-player" id="qPlayer"></div>
       <p class="q-text" id="qText"></p>

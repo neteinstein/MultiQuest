@@ -54,7 +54,7 @@
   var setup = {
     count: 2,
     players: A.COLORS.slice(0, 6).map(function (c, i) {
-      return { name: '', avatar: A.ORDER[i % A.ORDER.length], color: c.hex };
+      return { name: '', avatar: A.ORDER[i % A.ORDER.length], color: c.hex, level: 2 };
     })
   };
 
@@ -106,6 +106,11 @@
         html += '<button type="button" class="avatar-opt' + (av === p.avatar ? ' active' : '') + '" data-player="' + i + '" data-avatar="' + av + '" aria-pressed="' + (av === p.avatar) + '" title="' + esc(t('avatar_' + av)) + ' — ' + esc(t('motion_' + av)) + '">' +
           avatarHtml(av, p.color) + '<span>' + esc(t('avatar_' + av)) + '</span></button>';
       });
+      html += '</div><div class="label">' + esc(t('difficulty')) + '</div><div class="diff-picker" role="group" aria-label="' + esc(t('difficulty')) + '">';
+      for (var lv = 1; lv <= 4; lv++) {
+        html += '<button type="button" class="diff-btn lvl-' + lv + (lv === p.level ? ' active' : '') + '" data-player="' + i + '" data-diff="' + lv + '" aria-pressed="' + (lv === p.level) + '">' +
+          '<span class="stars" aria-hidden="true">' + '★★★★'.slice(0, lv) + '</span>' + esc(t('diff_' + lv)) + '</button>';
+      }
       html += '</div><div class="label">' + esc(t('color')) + '</div><div class="color-picker">';
       A.COLORS.forEach(function (c) {
         var taken = used.indexOf(c.hex) >= 0;
@@ -133,6 +138,9 @@
       setup.players[+b.dataset.player].avatar = b.dataset.avatar;
       renderSetup();
       setTheme(b.dataset.avatar);
+    } else if (b.classList.contains('diff-btn')) {
+      setup.players[+b.dataset.player].level = +b.dataset.diff;
+      renderSetup();
     } else if (b.classList.contains('swatch') && !b.disabled) {
       setup.players[+b.dataset.player].color = b.dataset.color;
       renderSetup();
@@ -168,7 +176,7 @@
   function newGame(players) {
     state = {
       players: players.map(function (p, i) {
-        return { idx: i, name: (p.name || '').trim(), avatar: p.avatar, color: p.color, pos: 0, skip: 0 };
+        return { idx: i, name: (p.name || '').trim(), avatar: p.avatar, color: p.color, level: p.level || 2, pos: 0, skip: 0 };
       }),
       current: 0,
       topics: R.assignTopics(),
@@ -180,6 +188,7 @@
     };
     $('setup').classList.add('hidden');
     $('game').classList.remove('hidden');
+    document.body.classList.add('in-game');
     $('newGameBtn').classList.remove('hidden');
     $('winOverlay').classList.add('hidden');
     renderBoard();
@@ -195,15 +204,34 @@
   // ----------------------------------------------------------------- board
   var cols = 0;
 
-  function pickCols() {
-    var w = $('boardWrap').clientWidth || 800;
-    return w >= 900 ? 13 : w >= 700 ? 11 : w >= 480 ? 9 : 7;
+  // Pick the number of columns that gives the biggest square houses while the
+  // whole board fits the free space (no scrolling in any direction).
+  function fitBoard() {
+    var area = $('boardArea');
+    var W = area.clientWidth, H = area.clientHeight;
+    if (!W || !H) return false;
+    var small = Math.min(W, H) < 520;
+    var gap = small ? 3 : 5, pad = small ? 5 : 10;
+    var n = R.BOARD_SIZE + 1;
+    var best = null;
+    for (var c = 4; c <= 20; c++) {
+      var r = Math.ceil(n / c);
+      var cell = Math.floor(Math.min((W - 2 * pad - (c - 1) * gap) / c, (H - 2 * pad - (r - 1) * gap) / r));
+      if (!best || cell > best.cell || (cell === best.cell && c * r - n < best.waste)) best = { c: c, cell: cell, waste: c * r - n };
+    }
+    var board = $('board');
+    board.style.setProperty('--cs', Math.max(best.cell, 12) + 'px');
+    board.style.setProperty('--gap', gap + 'px');
+    board.style.setProperty('--pad', pad + 'px');
+    var changed = best.c !== cols;
+    cols = best.c;
+    board.style.setProperty('--cols', cols);
+    return changed;
   }
 
   function renderBoard() {
     var board = $('board');
-    cols = pickCols();
-    board.style.setProperty('--cols', cols);
+    fitBoard();
     var html = '';
     for (var h = 0; h <= R.BOARD_SIZE; h++) {
       var row = Math.floor(h / cols);
@@ -417,6 +445,9 @@
     var p = cur();
     $('turnAvatar').innerHTML = avatarHtml(p.avatar, p.color, 'idle');
     $('turnName').textContent = nm(p);
+    var td = $('turnDiff');
+    td.className = 'diff-badge lvl-' + p.level;
+    td.textContent = t('diff_' + p.level);
     $('turnCard').style.setProperty('--pc', p.color);
     renderTurnPos();
     updateRollBtn();
@@ -429,6 +460,7 @@
       html += '<li class="' + (active ? 'active' : '') + '" style="--pc:' + p.color + '">' +
         avatarHtml(p.avatar, p.color, 'mini') +
         '<span class="pl-name">' + esc(nm(p)) + '</span>' +
+        '<span class="diff-badge lvl-' + p.level + '">' + esc(t('diff_' + p.level)) + '</span>' +
         (p.skip > 0 ? '<span class="badge">' + esc(t('skipBadge')) + '</span>' : '') +
         '<span class="pl-pos">' + p.pos + '</span>' +
         '<span class="bar"><span style="width:' + (p.pos / R.BOARD_SIZE * 100) + '%"></span></span>' +
@@ -505,7 +537,7 @@
 
   async function ask(p, from) {
     state.phase = 'question';
-    var q = state.dealer.next(state.topics[p.pos], p.pos);
+    var q = state.dealer.next(state.topics[p.pos], p.level);
     var ok = await showQuestion(q, p);
     state.phase = 'moving';
     if (ok) {
@@ -586,6 +618,8 @@
     badge.className = 'topic-badge topic-' + q.topic;
     badge.textContent = TOPIC_ICON[q.topic] + ' ' + t('topic_' + q.topic);
     $('qHouse').textContent = t('house', { n: s.p.pos });
+    $('qDiff').className = 'diff-badge lvl-' + s.p.level;
+    $('qDiff').textContent = t('diff_' + s.p.level);
     $('qPlayer').innerHTML = avatarHtml(s.p.avatar, s.p.color, 'mini idle') + '<span>' + esc(nm(s.p)) + '</span>';
     $('qText').textContent = q.q[lang];
     var html = '';
@@ -633,11 +667,25 @@
     s.resolve(s.answered === s.q.correct);
   }
 
+  // ---------------------------------------------------------------- drawer
+  function openDrawer() {
+    if (!state) return;
+    renderPlayers();
+    $('drawer').classList.remove('hidden');
+    $('drawerClose').focus();
+  }
+  function closeDrawer() {
+    if ($('drawer').classList.contains('hidden')) return;
+    $('drawer').classList.add('hidden');
+    $('moreBtn').focus();
+  }
+
   // ------------------------------------------------------------ language
   function applyLang() {
     document.documentElement.lang = lang;
     document.querySelectorAll('[data-i18n]').forEach(function (el) { el.textContent = t(el.dataset.i18n); });
     document.querySelectorAll('[data-i18n-aria]').forEach(function (el) { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
+    document.querySelectorAll('[data-i18n-title]').forEach(function (el) { el.title = t(el.dataset.i18nTitle); });
     document.querySelectorAll('.lang-btn').forEach(function (b) {
       b.classList.toggle('active', b.dataset.lang === lang);
       b.setAttribute('aria-pressed', b.dataset.lang === lang);
@@ -666,6 +714,8 @@
     state = null;
     $('game').classList.add('hidden');
     $('setup').classList.remove('hidden');
+    document.body.classList.remove('in-game');
+    closeDrawer();
     $('newGameBtn').classList.add('hidden');
     $('winOverlay').classList.add('hidden');
     $('questionOverlay').classList.add('hidden');
@@ -688,6 +738,9 @@
     document.querySelectorAll('.lang-btn').forEach(function (b) {
       b.addEventListener('click', function () { setLang(b.dataset.lang); });
     });
+    $('moreBtn').addEventListener('click', openDrawer);
+    $('drawerClose').addEventListener('click', closeDrawer);
+    $('drawer').addEventListener('click', function (e) { if (e.target === this) closeDrawer(); });
     $('rulesBtn').addEventListener('click', function () { $('rulesOverlay').classList.remove('hidden'); $('rulesClose').focus(); });
     $('rulesClose').addEventListener('click', function () { $('rulesOverlay').classList.add('hidden'); });
     $('rulesOverlay').addEventListener('click', function (e) { if (e.target === this) this.classList.add('hidden'); });
@@ -696,12 +749,16 @@
     });
     $('playAgainBtn').addEventListener('click', goToSetup);
     $('rematchBtn').addEventListener('click', function () {
-      var players = state.players.map(function (p) { return { name: p.name, avatar: p.avatar, color: p.color }; });
+      var players = state.players.map(function (p) { return { name: p.name, avatar: p.avatar, color: p.color, level: p.level }; });
       newGame(players);
     });
 
     document.addEventListener('keydown', function (e) {
       if (e.target.tagName === 'INPUT') return;
+      if (!$('drawer').classList.contains('hidden')) {
+        if (e.key === 'Escape') closeDrawer();
+        return;
+      }
       if (!$('rulesOverlay').classList.contains('hidden')) {
         if (e.key === 'Escape') $('rulesOverlay').classList.add('hidden');
         return;
@@ -717,14 +774,16 @@
     });
 
     var resizeTimer;
-    window.addEventListener('resize', function () {
+    function onResize() {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(function () {
         if (!state) return;
-        if (pickCols() !== cols) renderBoard();
+        if (fitBoard()) renderBoard();
         layoutTokens(true);
-      }, 120);
-    });
+      }, 80);
+    }
+    window.addEventListener('resize', onResize);
+    if (window.ResizeObserver) new ResizeObserver(onResize).observe($('boardArea'));
 
     setTheme('default');
     applyLang();

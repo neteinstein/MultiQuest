@@ -408,6 +408,115 @@
     ['castelo', 'castle'], ['navio', 'ship'], ['estrela', 'star'], ['nuvem', 'cloud'], ['montanha', 'mountain'], ['rio', 'river']
   ];
 
+  // ------------------------------------------------------------- levels
+  // Difficulty per question: 1 easy, 2 medium, 3 hard, 4 genius (digit per index, in order).
+  function tag(list, levels) {
+    if (levels.length !== list.length) throw new Error('levels mismatch: ' + levels.length + ' vs ' + list.length);
+    list.forEach(function (e, i) { e.lvl = +levels[i]; });
+  }
+  function SL(lvl, ptQ, ptA, enQ, enA) { var e = S(ptQ, ptA, enQ, enA); e.lvl = lvl; return e; }
+
+  tag(HISTORY, '1332222112321222312211113123221321222123133322333');
+  tag(SCIENCE, '11112322121133332223231111123312322211321111');
+  tag(PORTUGUESE, '1322223212121233112111212212322321312121113321122212222232');
+  tag(ENGLISH, '1112212222222111111312211111122322');
+
+  HISTORY.push(
+    SL(4, 'Em que ano foi assinado o Tratado de Windsor com Inglaterra?', ['1386', '1373', '1415', '1294'],
+      'In which year was the Treaty of Windsor with England signed?'),
+    SL(4, 'Que rei ficou conhecido como "o Lavrador"?', ['D. Dinis', 'D. Afonso III', 'D. Sancho II', 'D. Pedro I'],
+      'Which king was known as "the Farmer"?'),
+    SL(4, 'Em que batalha de 1139 D. Afonso Henriques venceu os Mouros?', ['Ourique', 'São Mamede', 'Salado', 'Valdevez'],
+      'In which 1139 battle did Afonso Henriques defeat the Moors?'),
+    SL(4, 'Que rei outorgou a Carta Constitucional de 1826?', ['D. Pedro IV', 'D. João VI', 'D. Miguel', 'D. Maria II'],
+      'Which king granted the 1826 Constitutional Charter?'),
+    SL(4, 'Em que ano terminou a guerra civil entre liberais e absolutistas (Évora Monte)?', ['1834', '1828', '1820', '1851'],
+      'In which year did the civil war between liberals and absolutists end (Évora Monte)?'),
+    SL(4, 'Em que ano os portugueses chegaram ao Japão?', ['1543', '1498', '1557', '1600'],
+      'In which year did the Portuguese reach Japan?'),
+    SL(4, 'Que rei mandou construir o Palácio-Convento de Mafra?', ['D. João V', 'D. José I', 'D. Maria I', 'D. Pedro II'],
+      'Which king had the Mafra Palace-Convent built?'),
+    SL(4, 'Quem era o rei de Portugal no terramoto de 1755?', ['D. José I', 'D. João V', 'D. Maria I', 'D. Pedro III'],
+      'Who was king of Portugal during the 1755 earthquake?'),
+    SL(4, 'Em que ano Portugal aboliu a pena de morte para crimes civis?', ['1867', '1911', '1852', '1976'],
+      'In which year did Portugal abolish the death penalty for civil crimes?'),
+    SL(4, 'Quem foi o primeiro Presidente eleito depois do 25 de Abril?', ['Ramalho Eanes', 'Mário Soares', 'António de Spínola', 'Costa Gomes'],
+      'Who was the first President elected after 25 April 1974?'),
+    SL(4, 'Que tratado de 1703 ligou o vinho do Porto ao comércio com Inglaterra?', ['Tratado de Methuen', 'Tratado de Windsor', 'Tratado de Utrecht', 'Tratado de Tordesilhas'],
+      'Which 1703 treaty tied Port wine to trade with England?',
+      ['Methuen Treaty', 'Treaty of Windsor', 'Treaty of Utrecht', 'Treaty of Tordesillas']),
+    SL(4, 'Que cidade foi capital do Império Português entre 1808 e 1821?', ['Rio de Janeiro', 'Lisboa', 'Salvador', 'Luanda'],
+      'Which city was the capital of the Portuguese Empire from 1808 to 1821?',
+      ['Rio de Janeiro', 'Lisbon', 'Salvador', 'Luanda'])
+  );
+
+  SCIENCE.push(
+    SL(4, 'Qual é a velocidade aproximada da luz no vácuo?', ['300 000 km/s', '30 000 km/s', '3 000 km/s', '300 km/s'],
+      'What is the approximate speed of light in a vacuum?'),
+    SL(4, 'Qual é o número atómico do carbono?', ['6', '12', '8', '14'],
+      'What is the atomic number of carbon?'),
+    SL(4, 'Que organelo produz a maior parte da energia (ATP) da célula?', ['Mitocôndria', 'Ribossoma', 'Complexo de Golgi', 'Lisossoma'],
+      'Which organelle makes most of the cell\'s energy (ATP)?', ['Mitochondrion', 'Ribosome', 'Golgi apparatus', 'Lysosome']),
+    SL(3, 'Qual é a fórmula química do sal de cozinha?', ['NaCl', 'KCl', 'NaOH', 'CaCO₃'],
+      'What is the chemical formula of table salt?'),
+    SL(4, 'Qual é a unidade SI de energia?', ['Joule', 'Watt', 'Newton', 'Pascal'],
+      'What is the SI unit of energy?'),
+    SL(3, 'Que cientista descobriu o rádio e o polónio?', ['Marie Curie', 'Rosalind Franklin', 'Lise Meitner', 'Ada Lovelace'],
+      'Which scientist discovered radium and polonium?'),
+    SL(4, 'Quantos cromossomas tem uma célula humana normal?', ['46', '23', '44', '48'],
+      'How many chromosomes does a normal human cell have?'),
+    SL(4, 'Qual é o elemento mais abundante no Universo?', ['Hidrogénio', 'Hélio', 'Oxigénio', 'Carbono'],
+      'Which element is the most abundant in the Universe?', ['Hydrogen', 'Helium', 'Oxygen', 'Carbon']),
+    SL(4, 'Qual é, aproximadamente, a aceleração da gravidade à superfície da Terra?', ['9,8 m/s²', '1,6 m/s²', '3,7 m/s²', '24,8 m/s²'],
+      'What is the approximate acceleration due to gravity at Earth\'s surface?', ['9.8 m/s²', '1.6 m/s²', '3.7 m/s²', '24.8 m/s²']),
+    SL(4, 'Em que planeta um dia dura mais do que um ano?', ['Vénus', 'Mercúrio', 'Marte', 'Neptuno'],
+      'On which planet is a day longer than a year?', ['Venus', 'Mercury', 'Mars', 'Neptune']),
+    SL(3, 'Que molécula guarda a informação genética?', ['ADN', 'Proteína', 'Glicose', 'Colesterol'],
+      'Which molecule stores genetic information?', ['DNA', 'Protein', 'Glucose', 'Cholesterol'])
+  );
+
+  PORTUGUESE.push(
+    SL(4, 'Que figura de estilo há em "O tempo é ouro"?', ['Metáfora', 'Comparação', 'Hipérbole', 'Personificação'],
+      'Which figure of speech is in the Portuguese "O tempo é ouro" (time is gold)?', ['Metaphor', 'Simile', 'Hyperbole', 'Personification']),
+    SL(3, 'Que figura de estilo há em "Chorei rios de lágrimas"?', ['Hipérbole', 'Metáfora', 'Ironia', 'Eufemismo'],
+      'Which figure of speech is in the Portuguese "Chorei rios de lágrimas" (I cried rivers of tears)?', ['Hyperbole', 'Metaphor', 'Irony', 'Euphemism']),
+    SL(4, 'Que heterónimo de Pessoa escreveu "O Guardador de Rebanhos"?', ['Alberto Caeiro', 'Álvaro de Campos', 'Ricardo Reis', 'Bernardo Soares'],
+      'Which Pessoa heteronym wrote "O Guardador de Rebanhos"?'),
+    SL(4, 'Que heterónimo de Pessoa era engenheiro naval?', ['Álvaro de Campos', 'Alberto Caeiro', 'Ricardo Reis', 'Bernardo Soares'],
+      'Which Pessoa heteronym was a naval engineer?'),
+    SL(4, 'Qual é o pretérito mais-que-perfeito simples de "fazer" (eu)?', ['fizera', 'fizesse', 'faria', 'fizer'],
+      'What is the simple pluperfect of "fazer" for "eu" (I)?'),
+    SL(4, 'Complete com o futuro do conjuntivo de "ver": "Quando eu o ___, digo-lhe."', ['vir', 'ver', 'visse', 'veja'],
+      'Complete with the future subjunctive of "ver": "Quando eu o ___, digo-lhe."'),
+    SL(3, 'Qual é o particípio passado de "pôr"?', ['posto', 'ponido', 'pusto', 'pondo'],
+      'What is the past participle of the Portuguese verb "pôr"?'),
+    SL(4, 'Em que livro aparece a personagem Blimunda?', ['Memorial do Convento', 'Os Maias', 'Amor de Perdição', 'A Cidade e as Serras'],
+      'In which book does the character Blimunda appear?'),
+    SL(3, 'Quem escreveu "Amor de Perdição"?', ['Camilo Castelo Branco', 'Almeida Garrett', 'Eça de Queirós', 'Júlio Dinis'],
+      'Who wrote "Amor de Perdição"?'),
+    SL(4, 'Quem escreveu "Viagens na Minha Terra"?', ['Almeida Garrett', 'Alexandre Herculano', 'Camilo Castelo Branco', 'Cesário Verde'],
+      'Who wrote "Viagens na Minha Terra"?')
+  );
+
+  ENGLISH.push(
+    SL(3, 'Qual é o passado de "catch"?', ['caught', 'catched', 'cought', 'catches'], 'What is the past simple of "catch"?'),
+    SL(3, 'Qual é o particípio passado de "speak"?', ['spoken', 'spoke', 'speaked', 'speaken'], 'What is the past participle of "speak"?'),
+    SL(3, 'Complete: "If I ___ rich, I would travel the world."', ['were', 'am', 'will be', 'been'], 'Complete: "If I ___ rich, I would travel the world."'),
+    SL(3, 'Qual é o plural de "sheep"?', ['sheep', 'sheeps', 'shoop', 'sheepes'], 'What is the plural of "sheep"?'),
+    SL(3, 'Complete: "She is good ___ maths."', ['at', 'in', 'on', 'for'], 'Complete: "She is good ___ maths."'),
+    SL(4, 'Complete: "By next year, I ___ here for ten years."', ['will have worked', 'will work', 'have worked', 'am working'],
+      'Complete: "By next year, I ___ here for ten years."'),
+    SL(4, 'Qual é o passado de "forbid"?', ['forbade', 'forbidded', 'forbidden', 'forbids'], 'What is the past simple of "forbid"?'),
+    SL(4, 'O que significa a expressão "to break the ice"?', ['Começar uma conversa', 'Partir alguma coisa', 'Ficar com frio', 'Desistir'],
+      'What does the expression "to break the ice" mean?', ['To start a conversation', 'To break something', 'To feel cold', 'To give up']),
+    SL(4, '"Actually" é um falso amigo. O que significa?', ['Na verdade', 'Atualmente', 'Agora mesmo', 'Antigamente'],
+      '"Actually" is a false friend of the Portuguese "atualmente". What does it mean?', ['In fact', 'Currently', 'Right now', 'In the past']),
+    SL(4, 'Complete: "Hardly ___ arrived when it started to rain."', ['had we', 'we had', 'did we', 'have we'],
+      'Complete: "Hardly ___ arrived when it started to rain."'),
+    SL(4, 'Qual é o plural de "phenomenon"?', ['phenomena', 'phenomenons', 'phenomenas', 'phenomenies'], 'What is the plural of "phenomenon"?'),
+    SL(4, 'Complete: "I wish I ___ told the truth yesterday."', ['had', 'have', 'would', 'was'], 'Complete: "I wish I ___ told the truth yesterday."')
+  );
+
   // ------------------------------------------------------------- generators
   function fromStatic(topic, list, idx, rand) {
     var e = list[idx];
@@ -464,14 +573,14 @@
     return set;
   }
 
-  // Maths difficulty grows along the board: 1 (houses 1–25), 2 (26–50), 3 (51–75).
-  function genMath(rand, house) {
-    var d = house > 50 ? 3 : house > 25 ? 2 : 1;
-    var kinds = d === 1
-      ? ['add', 'sub', 'mul', 'half', 'missing', 'seq', 'div']
-      : d === 2
-        ? ['add', 'sub', 'mul', 'div', 'pct', 'square', 'ops', 'seq', 'missing', 'frac']
-        : ['mul', 'div', 'pct', 'square', 'sqrt', 'ops', 'seq', 'frac', 'power', 'missing'];
+  // Maths by difficulty: 1 easy, 2 medium, 3 hard, 4 genius.
+  function genMath(rand, level) {
+    var d = Math.max(1, Math.min(4, level || 2));
+    var kinds = [null,
+      ['add', 'sub', 'mul', 'half', 'missing', 'seq', 'div'],
+      ['add', 'sub', 'mul', 'div', 'pct', 'square', 'ops', 'seq', 'missing', 'frac'],
+      ['mul', 'div', 'pct', 'square', 'sqrt', 'ops', 'seq', 'frac', 'power', 'missing'],
+      ['mulbig', 'pct4', 'sqrt', 'power', 'ops2', 'equation', 'geo', 'frac']][d];
     var kind = pick(rand, kinds);
     var a, b, c, ans, qpt, qen, opts;
     switch (kind) {
@@ -530,12 +639,12 @@
         opts = [ans, a * 2, ans + a, ans - a];
         break;
       case 'sqrt':
-        ans = rnd(rand, 4, 20); a = ans * ans;
+        ans = rnd(rand, 4, d === 4 ? 35 : 20); a = ans * ans;
         qpt = 'Qual é a raiz quadrada de ' + a + '?'; qen = 'What is the square root of ' + a + '?';
         opts = numericOptions(rand, ans, 3);
         break;
       case 'power':
-        a = pick(rand, [2, 3, 5, 10]); b = a === 2 ? rnd(rand, 3, 8) : a === 10 ? rnd(rand, 2, 5) : rnd(rand, 2, 4);
+        a = pick(rand, d === 4 ? [2, 3, 4, 5, 6, 7] : [2, 3, 5, 10]); b = a === 2 ? rnd(rand, 3, d === 4 ? 10 : 8) : a === 10 ? rnd(rand, 2, 5) : rnd(rand, 2, d === 4 ? 5 : 4);
         ans = Math.pow(a, b);
         qpt = 'Quanto é ' + a + ' elevado a ' + b + '?'; qen = 'What is ' + a + ' to the power of ' + b + '?';
         opts = [ans, a * b, Math.pow(a, b - 1), Math.pow(a, b + 1)];
@@ -553,6 +662,40 @@
         qpt = 'Qual é o número seguinte: ' + seq.join(', ') + ', …?';
         qen = 'What number comes next: ' + seq.join(', ') + ', …?';
         opts = numericOptions(rand, ans, b);
+        break;
+      case 'mulbig':
+        a = rnd(rand, 23, 99); b = rnd(rand, 12, 49);
+        ans = a * b; qpt = 'Quanto é ' + a + ' × ' + b + '?'; qen = 'What is ' + a + ' × ' + b + '?';
+        opts = [ans, ans + 10, ans - 10, ans + a];
+        break;
+      case 'pct4':
+        b = pick(rand, [5, 15, 35, 45, 65, 85]);
+        a = rnd(rand, 2, 25) * 20;
+        ans = a * b / 100;
+        qpt = 'Quanto é ' + b + '% de ' + a + '?'; qen = 'What is ' + b + '% of ' + a + '?';
+        opts = numericOptions(rand, ans, Math.max(3, Math.round(ans / 4)));
+        break;
+      case 'equation':
+        var x = rnd(rand, 2, 20); a = rnd(rand, 2, 9); b = rnd(rand, 1, 30);
+        c = a * x + b; ans = x;
+        qpt = a + 'x + ' + b + ' = ' + c + '. Quanto vale x?'; qen = a + 'x + ' + b + ' = ' + c + '. What is x?';
+        opts = numericOptions(rand, ans, 4);
+        break;
+      case 'ops2':
+        a = rnd(rand, 2, 20); b = rnd(rand, 2, 20); c = rnd(rand, 2, 9);
+        var e = rnd(rand, 1, Math.min(20, (a + b) * c - 1));
+        ans = (a + b) * c - e;
+        qpt = 'Quanto é (' + a + ' + ' + b + ') × ' + c + ' − ' + e + '?';
+        qen = 'What is (' + a + ' + ' + b + ') × ' + c + ' − ' + e + '?';
+        opts = [ans, a + b * c - e, ans + c, ans - e];
+        break;
+      case 'geo':
+        a = rnd(rand, 1, 5); b = rnd(rand, 2, 4);
+        var g = [a, a * b, a * b * b, a * b * b * b];
+        ans = a * Math.pow(b, 4);
+        qpt = 'Qual é o número seguinte: ' + g.join(', ') + ', …?';
+        qen = 'What number comes next: ' + g.join(', ') + ', …?';
+        opts = [ans, g[3] + (g[3] - g[2]), ans + g[3], ans - a];
         break;
       default: // missing
         b = rnd(rand, 3, d === 1 ? 30 : 90); ans = rnd(rand, 3, d === 1 ? 30 : 90);
@@ -572,39 +715,47 @@
 
   // --------------------------------------------------------------- dealer
   /**
-   * A Dealer hands out questions for a game, never repeating one
-   * until every question of that topic has been used.
+   * A Dealer hands out questions for a game. A question is never repeated until
+   * every question of that topic has been used. Each request asks for a level
+   * (1 easy … 4 genius); when that level runs out, the closest level is used.
    */
   function Dealer(rand) {
     this.rand = rand || Math.random;
     this.used = {};
-    this.decks = {};
   }
 
   var STATIC = { history: HISTORY, science: SCIENCE, portuguese: PORTUGUESE, english: ENGLISH };
   var GENERATOR = { portuguese: genAntonym, english: genVocab };
 
-  Dealer.prototype._fromDeck = function (topic) {
+  Dealer.prototype._fromBank = function (topic, level) {
     var list = STATIC[topic];
-    if (!this.decks[topic] || this.decks[topic].length === 0) {
-      var idx = [];
-      for (var i = 0; i < list.length; i++) if (!this.used[topic + '-s-' + i]) idx.push(i);
-      if (idx.length === 0) { // all used: start over
-        for (var j = 0; j < list.length; j++) { idx.push(j); delete this.used[topic + '-s-' + j]; }
-      }
-      this.decks[topic] = shuffle(idx, this.rand);
+    var self = this;
+    var order = [level, level - 1, level + 1, level - 2, level + 2, level - 3, level + 3];
+    function candidates(lvl) {
+      var out = [];
+      list.forEach(function (e, i) { if (e.lvl === lvl && !self.used[topic + '-s-' + i]) out.push(i); });
+      return out;
     }
-    return fromStatic(topic, list, this.decks[topic].pop(), this.rand);
+    for (var k = 0; k < order.length; k++) {
+      if (order[k] < 1 || order[k] > 4) continue;
+      var c = candidates(order[k]);
+      if (c.length) return fromStatic(topic, list, pick(this.rand, c), this.rand);
+    }
+    // Everything used: start this topic over.
+    for (var j = 0; j < list.length; j++) delete this.used[topic + '-s-' + j];
+    return this._fromBank(topic, level);
   };
 
-  Dealer.prototype.next = function (topic, house) {
+  Dealer.prototype.next = function (topic, level) {
+    level = Math.max(1, Math.min(4, level || 2));
     var q = null;
     for (var tries = 0; tries < 60; tries++) {
-      if (topic === 'math') q = genMath(this.rand, house || 1);
-      else if (GENERATOR[topic] && this.rand() < 0.4) q = GENERATOR[topic](this.rand);
-      else q = this._fromDeck(topic);
+      if (topic === 'math') q = genMath(this.rand, level);
+      else if (GENERATOR[topic] && level <= 2 && this.rand() < 0.35) q = GENERATOR[topic](this.rand);
+      else q = this._fromBank(topic, level);
       if (!this.used[q.key]) break;
     }
+    q.level = level;
     this.used[q.key] = true;
     return q;
   };
