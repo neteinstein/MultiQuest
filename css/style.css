@@ -523,7 +523,7 @@ body.in-game main { flex: 1; min-height: 0; display: flex; flex-direction: colum
 }
 @keyframes fade-in { from { opacity: 0; } }
 .modal {
-  position: relative; width: 100%; max-width: 580px; max-height: calc(100vh - 32px); overflow: auto;
+  position: relative; width: 100%; max-width: 580px; max-height: calc(100vh - 32px); max-height: calc(100dvh - 24px); overflow: auto;
   background: var(--panel); color: var(--panel-ink); border-radius: 20px; padding: 20px;
   border: 3px solid var(--accent); box-shadow: 0 20px 60px rgba(0,0,0,.45);
   animation: pop-in .3s cubic-bezier(.3,1.5,.5,1);
@@ -578,8 +578,18 @@ body.in-game main { flex: 1; min-height: 0; display: flex; flex-direction: colum
 .confetti i { position: absolute; top: -10px; width: 9px; height: 14px; border-radius: 2px; animation: confetti linear infinite; }
 @keyframes confetti { to { transform: translateY(110vh) rotate(720deg); } }
 
-.rules-body ul { padding-left: 20px; line-height: 1.5; }
-.rules-body h3 { margin-top: 10px; }
+.rules-modal { display: flex; flex-direction: column; overflow: hidden; padding-bottom: 14px; }
+.rules-modal h2 { flex: none; font-size: 22px; }
+.rules-body {
+  flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+  font-size: 15px; line-height: 1.45; margin: 8px -6px 12px; padding: 0 6px;
+  border-top: 1px solid var(--panel-border); border-bottom: 1px solid var(--panel-border);
+}
+.rules-body ul { padding-left: 18px; margin: 8px 0; }
+.rules-body li { margin-bottom: 4px; }
+.rules-body h3 { margin-top: 10px; font-size: 17px; }
+.rules-body p { margin: 8px 0; }
+.rules-modal > .primary { flex: none; align-self: flex-start; }
 
 .toasts { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 60; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; width: min(92vw, 520px); }
 .toast {
@@ -647,6 +657,11 @@ body.in-game main { flex: 1; min-height: 0; display: flex; flex-direction: colum
   .player-rows { grid-template-columns: 1fr; }
   .q-options { grid-template-columns: 1fr; }
   .q-text { font-size: 18px; }
+  .overlay { padding: 10px; }
+  .modal { padding: 14px; border-radius: 16px; }
+  .rules-modal h2 { font-size: 19px; }
+  .rules-body { font-size: 13.5px; line-height: 1.4; }
+  .rules-body h3 { font-size: 15px; }
   .die { width: 46px; height: 46px; padding: 6px; }
   .diff-btn { font-size: 12px; }
 }
