@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MultiQuest</title>
+  <meta name="description" content="Jogo de tabuleiro de perguntas para 2 a 6 jogadores / Quiz board game for 2 to 6 players">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-theme="default">
+  <div id="decor" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">🎲</span>
+      <div>
+        <h1>MultiQuest</h1>
+        <p class="tagline" data-i18n="subtitle"></p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <div class="lang" role="group" data-i18n-aria="language">
+        <button type="button" class="lang-btn" data-lang="pt">PT</button>
+        <button type="button" class="lang-btn" data-lang="en">EN</button>
+      </div>
+      <button type="button" class="ghost" id="rulesBtn" data-i18n="rules"></button>
+      <button type="button" class="ghost hidden" id="newGameBtn" data-i18n="newGame"></button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Setup -->
+    <section id="setup" class="screen">
+      <div class="card setup-card">
+        <h2 data-i18n="setupTitle"></h2>
+        <div class="field">
+          <span class="label" data-i18n="numPlayers"></span>
+          <div class="count-picker" id="countPicker"></div>
+        </div>
+        <div id="playerRows" class="player-rows"></div>
+        <button type="button" class="primary big" id="startBtn" data-i18n="start"></button>
+      </div>
+    </section>
+
+    <!-- Game -->
+    <section id="game" class="screen hidden">
+      <div class="board-area">
+        <div class="board-wrap" id="boardWrap">
+          <div id="board" class="board"></div>
+          <div id="tokens" class="tokens"></div>
+        </div>
+      </div>
+      <aside class="panel">
+        <div class="card turn-card" id="turnCard">
+          <div class="turn-label" data-i18n="turnOf"></div>
+          <div class="turn-player">
+            <div class="turn-avatar" id="turnAvatar"></div>
+            <div>
+              <div class="turn-name" id="turnName"></div>
+              <div class="turn-pos" id="turnPos"></div>
+            </div>
+          </div>
+          <div class="dice-row">
+            <div class="die" id="die" aria-live="polite"></div>
+            <button type="button" class="primary big" id="rollBtn" data-i18n="roll"></button>
+          </div>
+          <div class="hint" data-i18n="rollHint"></div>
+          <div class="message" id="message" aria-live="polite"></div>
+        </div>
+        <div class="card">
+          <h3 data-i18n="players"></h3>
+          <ol class="player-list" id="playerList"></ol>
+        </div>
+        <div class="card">
+          <h3 data-i18n="legend"></h3>
+          <ul class="legend" id="legend"></ul>
+        </div>
+        <div class="card log-card">
+          <h3 data-i18n="log"></h3>
+          <ol class="log" id="log"></ol>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <!-- Question -->
+  <div class="overlay hidden" id="questionOverlay" role="dialog" aria-modal="true" aria-labelledby="qText">
+    <div class="modal question-modal">
+      <div class="q-head">
+        <span class="topic-badge" id="qTopic"></span>
+        <span class="q-house" id="qHouse"></span>
+      </div>
+      <div class="q-player" id="qPlayer"></div>
+      <p class="q-text" id="qText"></p>
+      <div class="q-options" id="qOptions"></div>
+      <div class="q-feedback" id="qFeedback" aria-live="assertive"></div>
+      <div class="q-foot">
+        <span class="hint" data-i18n="answerHint"></span>
+        <button type="button" class="primary hidden" id="qContinue" data-i18n="continue"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Winner -->
+  <div class="overlay hidden" id="winOverlay" role="dialog" aria-modal="true">
+    <div class="modal win-modal">
+      <div class="confetti" id="confetti" aria-hidden="true"></div>
+      <div class="win-avatar" id="winAvatar"></div>
+      <h2 data-i18n="winnerTitle"></h2>
+      <p id="winText"></p>
+      <div class="win-actions">
+        <button type="button" class="primary big" id="rematchBtn" data-i18n="samePlayers"></button>
+        <button type="button" class="ghost" id="playAgainBtn" data-i18n="playAgain"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rules -->
+  <div class="overlay hidden" id="rulesOverlay" role="dialog" aria-modal="true">
+    <div class="modal rules-modal">
+      <h2 data-i18n="rulesTitle"></h2>
+      <div id="rulesBody" class="rules-body"></div>
+      <button type="button" class="primary" id="rulesClose" data-i18n="close"></button>
+    </div>
+  </div>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <script src="js/rules.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/avatars.js"></script>
+  <script src="js/questions.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
