@@ -8,6 +8,8 @@ Jogo de tabuleiro de perguntas para 2 a 6 jogadores, no mesmo dispositivo. Em po
 Abra `index.html` num browser — não é preciso instalar nada.
 *Open `index.html` in a browser — no build or install needed.*
 
+Online: https://neteinstein.github.io/MultiQuest/ (publicado automaticamente pelo GitHub Actions a cada push para `main`).
+
 ## Regras
 
 - O tabuleiro tem as casas 1 a 75; todos começam na casa 0.
