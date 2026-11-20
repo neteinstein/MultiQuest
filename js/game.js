@@ -482,28 +482,53 @@
   }
 
   // ------------------------------------------------------------------ dice
+  // A 3D cube with six faces. Rolling spins it a few whole turns and settles
+  // on the face that was rolled.
   var PIPS = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
+  // Cube rotation (x, y degrees) that brings each face to the front.
+  var FACE_TURN = { 1: [0, 0], 2: [0, -90], 3: [-90, 0], 4: [90, 0], 5: [0, 90], 6: [0, 180] };
+  var dieSpins = 0;
+
+  function buildDie() {
+    var html = '<div class="cube" id="cube">';
+    for (var n = 1; n <= 6; n++) {
+      html += '<div class="face f' + n + '">';
+      for (var i = 0; i < 9; i++) html += '<span class="pip' + (PIPS[n].indexOf(i) >= 0 ? ' on' : '') + '"></span>';
+      html += '</div>';
+    }
+    $('die').innerHTML = html + '</div><div class="die-shadow"></div>';
+  }
+
+  function cubeTransform(n, spins) {
+    var f = FACE_TURN[n];
+    return 'rotateX(' + (f[0] + 360 * spins) + 'deg) rotateY(' + (f[1] + 360 * (spins + (spins ? 1 : 0))) + 'deg) rotateZ(' + 360 * spins + 'deg)';
+  }
+
   function renderDie(n) {
-    var html = '';
-    for (var i = 0; i < 9; i++) html += '<span class="pip' + (PIPS[n].indexOf(i) >= 0 ? ' on' : '') + '"></span>';
-    var d = $('die');
-    d.innerHTML = html;
-    d.setAttribute('aria-label', String(n));
+    if (!$('cube')) buildDie();
+    var cube = $('cube');
+    cube.style.transition = 'none';
+    dieSpins = 0;
+    cube.style.transform = cubeTransform(n, 0);
+    $('die').setAttribute('aria-label', String(n));
   }
 
   async function animateDie() {
     var die = $('die');
+    var cube = $('cube');
     var result = R.rollDie();
-    die.classList.add('rolling');
-    var frames = reduceMotion ? 1 : 12;
-    for (var i = 0; i < frames; i++) {
-      renderDie(1 + Math.floor(Math.random() * 6));
-      await sleep(55 + i * 6);
-    }
+    var ms = reduceMotion ? 0 : 1100;
+    dieSpins += 2;
+    die.classList.remove('landed');
+    retrigger(die, 'rolling');
+    cube.style.transition = ms ? 'transform ' + ms + 'ms cubic-bezier(.15,.75,.25,1)' : 'none';
+    cube.style.transform = cubeTransform(result, dieSpins);
+    die.setAttribute('aria-label', String(result));
+    await sleep(ms);
     die.classList.remove('rolling');
-    renderDie(result);
     retrigger(die, 'landed');
-    await sleep(reduceMotion ? 100 : 350);
+    burstAt(die, ['#ffffff', '#ffd54f'], 8, 34);
+    await sleep(reduceMotion ? 100 : 300);
     return result;
   }
 
@@ -676,7 +701,8 @@
   async function ask(p, from) {
     state.phase = 'question';
     var topic = state.topics[p.pos];
-    var level = p.level;
+    var level = R.streakLevel(p.level, p.bonus);
+    var seconds = R.questionSeconds(p.bonus);
     var trap = state.traps[p.pos];
     if (trap && trap.owner !== p.idx) {
       delete state.traps[p.pos];
@@ -698,7 +724,7 @@
     }
     level = Math.min(4, level);
     var q = state.dealer.next(topic, level);
-    var ok = await showQuestion(q, p, level);
+    var ok = await showQuestion(q, p, level, seconds, p.bonus);
     state.phase = 'moving';
     if (ok) {
       p.energy = R.gainEnergy(p.energy);
@@ -787,12 +813,12 @@
   }
 
   // -------------------------------------------------------------- question
-  function showQuestion(q, p, level) {
+  function showQuestion(q, p, level, seconds, streak) {
     return new Promise(function (resolve) {
-      state.question = { q: q, p: p, level: level || q.level, answered: null, resolve: resolve };
+      state.question = { q: q, p: p, level: level || q.level, seconds: seconds || R.QUESTION_SECONDS, streak: streak || 0, answered: null, resolve: resolve };
       renderQuestion();
       $('questionOverlay').classList.remove('hidden');
-      startTimer($('qTimer'), $('qTimerNum'), function () { answer(-1); });
+      startTimer($('qTimer'), $('qTimerNum'), function () { answer(-1); }, state.question.seconds);
       var first = $('qOptions').querySelector('button');
       if (first) first.focus();
     });
@@ -807,8 +833,9 @@
     document.querySelector('.question-modal').dataset.topic = q.topic;
     badge.textContent = TOPIC_ICON[q.topic] + ' ' + t('topic_' + q.topic);
     $('qHouse').textContent = t('house', { n: s.p.pos });
-    $('qDiff').className = 'diff-badge lvl-' + s.p.level;
-    $('qDiff').textContent = t('diff_' + s.p.level);
+    $('qDiff').className = 'diff-badge lvl-' + s.level;
+    $('qDiff').textContent = t('diff_' + s.level);
+    $('qStreak').textContent = s.streak ? t('streakBadge', { n: s.streak, s: s.seconds }) : '';
     $('qPlayer').innerHTML = avatarHtml(s.p.avatar, s.p.color, 'mini idle') + '<span>' + esc(nm(s.p)) + '</span>';
     $('qText').textContent = q.q[lang];
     var html = '';
@@ -900,9 +927,9 @@
   // ----------------------------------------------------------------- timer
   // Every question has QUESTION_SECONDS; the bar empties and the number counts down.
   var qTimer = null;
-  function startTimer(box, num, onExpire) {
+  function startTimer(box, num, onExpire, seconds) {
     stopTimer();
-    var total = R.QUESTION_SECONDS;
+    var total = seconds || R.QUESTION_SECONDS;
     var end = Date.now() + total * 1000;
     box.style.setProperty('--t-ms', total * 1000 + 'ms');
     box.classList.remove('urgent', 'stopped');

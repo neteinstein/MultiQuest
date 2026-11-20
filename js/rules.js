@@ -9,6 +9,9 @@
   var MAX_BONUS_ROLLS = 3;
   // Seconds to answer a question; running out counts as a wrong answer.
   var QUESTION_SECONDS = 30;
+  // Each extra roll in a streak of right answers gets a harder question with less time.
+  var STREAK_SECONDS_STEP = 5;
+  var MIN_SECONDS = 15;
 
   // Special houses. These replace the question for that house.
   var SPECIAL = {
@@ -88,6 +91,16 @@
       var t = a[i]; a[i] = a[j]; a[j] = t;
     }
     return a;
+  }
+
+  /** Level of the next question in a streak: one harder per extra roll, at most Genius (4). */
+  function streakLevel(level, streak) {
+    return Math.min(4, level + streak);
+  }
+
+  /** Seconds for the next question in a streak: 30, 25, 20, 15. */
+  function questionSeconds(streak) {
+    return Math.max(MIN_SECONDS, QUESTION_SECONDS - STREAK_SECONDS_STEP * streak);
   }
 
   /** Whether a right answer earns another roll, given the bonus rolls already taken this turn. */
@@ -183,6 +196,8 @@
     TELEPORT_HOUSE: TELEPORT_HOUSE,
     MAX_BONUS_ROLLS: MAX_BONUS_ROLLS,
     QUESTION_SECONDS: QUESTION_SECONDS,
+    streakLevel: streakLevel,
+    questionSeconds: questionSeconds,
     earnsBonusRoll: earnsBonusRoll,
     MAX_ENERGY: MAX_ENERGY,
     DUEL_RANGE: DUEL_RANGE,

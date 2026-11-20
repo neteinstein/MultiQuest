@@ -69,7 +69,8 @@ async function checkFits(page, label) {
   const levelMismatch = [];
   const powersUsed = new Set();
   let turns = 0, questions = 0, switched = false, drawerChecked = false, bonusOver = false;
-  let steals = 0, duels = 0;
+  let steals = 0, duels = 0, streakQs = 0;
+  const timeMismatch = [];
   const rnd = (n) => Math.floor(Math.random() * n);
   const start = Date.now();
   while (Date.now() - start < 300000) {
@@ -77,7 +78,7 @@ async function checkFits(page, label) {
       const s = MQGame.state;
       return {
         phase: s.phase, winner: !!s.winner,
-        q: s.question && { answered: s.question.answered, correct: s.question.q.correct, level: s.question.q.level, expect: s.question.level, bonus: s.question.p.bonus },
+        q: s.question && { answered: s.question.answered, correct: s.question.q.correct, level: s.question.q.level, expect: s.question.level, bonus: s.question.p.bonus, seconds: s.question.seconds, streak: s.question.streak },
         duel: s.duel && { step: s.duel.step, correct: s.duel.q.correct },
         steal: !!s.stealOffer,
         powersOpen: !document.getElementById('powerOverlay').classList.contains('hidden'),
@@ -97,6 +98,8 @@ async function checkFits(page, label) {
         questions++;
         if (st.q.bonus > 3) bonusOver = true;
         if (st.q.level !== st.q.expect) levelMismatch.push(st.q);
+        if (st.q.seconds !== Math.max(15, 30 - 5 * st.q.streak)) timeMismatch.push(st.q);
+        if (st.q.streak > 0) streakQs++;
         const pick = Math.random() < 0.85 ? st.q.correct : (st.q.correct + 1) % 4;
         await page.click('[data-opt="' + pick + '"]');
       } else {
@@ -132,6 +135,7 @@ async function checkFits(page, label) {
     await page.waitForTimeout(30);
   }
   powersUsed.size >= 5 ? pass('powers used: ' + [...powersUsed].join(', ')) : fail('only these powers were used: ' + [...powersUsed].join(', '));
+  streakQs > 0 && !timeMismatch.length ? pass(streakQs + ' streak questions, each with less time') : fail('streak timing: ' + streakQs + ' streak questions, ' + timeMismatch.length + ' with the wrong time');
   steals > 0 ? pass(steals + ' chance(s) to steal a question') : fail('nobody was offered a steal');
   duels > 0 ? pass(duels + ' duel(s) fought') : fail('no duel was fought');
   const winner = await page.evaluate(() => MQGame.state.winner && MQGame.state.winner.idx);
