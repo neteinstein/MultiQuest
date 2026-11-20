@@ -937,9 +937,14 @@ body::after {
   background: linear-gradient(180deg, #8c6bff, #5e35b1); color: #fff; font-weight: 800; font-size: 15px;
   box-shadow: 0 4px 0 #3b1f8a, 0 8px 18px -6px rgba(124,77,255,.9); transition: transform .1s, box-shadow .1s, opacity .2s, filter .2s;
 }
+.power-btn { position: relative; }
 .power-btn span[aria-hidden] { font-size: 18px; filter: drop-shadow(0 0 4px #ffc400); }
+.power-count {
+  position: absolute; top: -7px; right: -7px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px;
+  background: #ffc400; color: #3a2a00; font-size: 12px; line-height: 20px; text-align: center; box-shadow: 0 0 0 2px #fff, 0 2px 6px rgba(0,0,0,.3);
+}
 .power-btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 #3b1f8a; }
-.power-btn:disabled { opacity: .35; filter: grayscale(.8); box-shadow: none; }
+.power-btn:disabled { opacity: .45; filter: grayscale(.6); box-shadow: none; }
 .power-btn.ready { animation: power-ready 1.8s ease-in-out infinite; }
 @keyframes power-ready { 50% { box-shadow: 0 4px 0 #3b1f8a, 0 0 0 6px rgba(255,196,0,.3), 0 0 26px rgba(255,196,0,.9); } }
 
@@ -1068,3 +1073,57 @@ body::after {
   /* The timer bar is information, not decoration: keep it counting down. */
   .q-timer.running .q-timer-bar { animation-duration: var(--t-ms, 30s) !important; }
 }
+
+/* ============================================================ 3D die */
+.die {
+  --ds: 52px; position: relative; display: block; width: var(--ds); height: var(--ds); padding: 0;
+  background: none; border: 0; border-radius: 0; box-shadow: none; perspective: 240px;
+}
+.cube { position: absolute; inset: 0; transform-style: preserve-3d; }
+.face {
+  position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr);
+  padding: 12%; border-radius: 20%; backface-visibility: hidden;
+  background: radial-gradient(circle at 30% 25%, #ffffff, #f2f4f9 55%, #d6dce8);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.08), inset 0 -3px 6px rgba(0,0,0,.12);
+}
+.face .pip { margin: 16%; border-radius: 50%; }
+.face .pip.on { background: radial-gradient(circle at 35% 30%, #555, #111 70%); box-shadow: inset 0 1px 1px rgba(0,0,0,.6); }
+.face.f1 .pip.on { background: radial-gradient(circle at 35% 30%, #ff6b6b, #c62828 70%); }
+.f1 { transform: translateZ(calc(var(--ds) / 2)); }
+.f6 { transform: rotateY(180deg) translateZ(calc(var(--ds) / 2)); }
+.f2 { transform: rotateY(90deg) translateZ(calc(var(--ds) / 2)); }
+.f5 { transform: rotateY(-90deg) translateZ(calc(var(--ds) / 2)); }
+.f3 { transform: rotateX(90deg) translateZ(calc(var(--ds) / 2)); }
+.f4 { transform: rotateX(-90deg) translateZ(calc(var(--ds) / 2)); }
+.die-shadow {
+  position: absolute; left: 12%; right: 12%; bottom: -9%; height: 14%; border-radius: 50%;
+  background: rgba(0,0,0,.35); filter: blur(3px); z-index: -1;
+}
+.die.rolling { animation: die-hop 1.1s cubic-bezier(.3,.6,.4,1); }
+.die.landed { animation: die-squash .3s ease-out; }
+@keyframes die-hop {
+  0% { transform: translateY(0) scale(1); }
+  20% { transform: translateY(-6px) scale(1.06); }
+  45% { transform: translateY(0) scale(1); }
+  60% { transform: translateY(-3px) scale(1.03); }
+  75%, 100% { transform: translateY(0) scale(1); }
+}
+@keyframes die-squash { 40% { transform: scale(1.08, .92); } 100% { transform: scale(1); } }
+@media (max-width: 600px) { .die { --ds: 46px; padding: 0; } }
+
+/* Streak badge on the question */
+.streak-badge { font-size: 11px; font-weight: 800; color: #fff; border-radius: 999px; padding: 2px 8px; white-space: nowrap;
+  background: linear-gradient(90deg, #ff3d00, #ff9100); box-shadow: 0 0 12px -2px #ff6d00; }
+.streak-badge:empty { display: none; }
+/* The roll button must not clip the die while it tumbles: the sheen moves by
+   background position instead of overflowing, and only the label dims. */
+.roll-btn { overflow: visible; }
+.roll-btn::after {
+  transform: none; border-radius: inherit;
+  background: linear-gradient(110deg, transparent 40%, rgba(255,255,255,.5) 50%, transparent 60%) no-repeat;
+  background-size: 300% 100%; background-position: 150% 0;
+}
+.roll-btn.pulse::after { animation: sheen-bg 2.6s ease-in-out infinite; }
+@keyframes sheen-bg { 0% { background-position: 150% 0; } 45%, 100% { background-position: -50% 0; } }
+.roll-btn:disabled { opacity: 1; background-color: color-mix(in srgb, var(--accent) 55%, #777); }
+.roll-btn:disabled .roll-label { opacity: .6; }

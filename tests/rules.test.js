@@ -198,3 +198,10 @@ test('a steal moves forward what the wrong answer lost', () => {
   assert.equal(R.stealGain(14, 9), 5);
   assert.equal(R.stealGain(73, 73), 0);
 });
+
+test('a streak makes each question harder and shorter', () => {
+  assert.equal(R.streakLevel(1, 0), 1);
+  assert.equal(R.streakLevel(1, 2), 3);
+  assert.equal(R.streakLevel(3, 3), 4);
+  assert.deepEqual([0, 1, 2, 3].map(R.questionSeconds), [30, 25, 20, 15]);
+});

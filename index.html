@@ -85,7 +85,7 @@
           <span class="die" id="die" aria-hidden="true"></span>
           <span class="roll-label" data-i18n="roll"></span>
         </button>
-        <button type="button" class="power-btn" id="powerBtn" aria-haspopup="dialog"><span aria-hidden="true">⚡</span><span class="power-label" data-i18n="powers"></span></button>
+        <button type="button" class="power-btn" id="powerBtn" aria-haspopup="dialog"><span aria-hidden="true">⚡</span><span class="power-label" data-i18n="powers"></span><b class="power-count" id="powerCount">0</b></button>
         <button type="button" class="icon-btn" id="moreBtn" data-i18n-aria="more" data-i18n-title="more" aria-haspopup="dialog">☰</button>
       </div>
     </section>
@@ -118,7 +118,7 @@
     <div class="modal question-modal">
       <div class="q-head">
         <span class="topic-badge" id="qTopic"></span>
-        <span class="q-meta"><span class="diff-badge" id="qDiff"></span> <span class="q-house" id="qHouse"></span></span>
+        <span class="q-meta"><span class="streak-badge" id="qStreak"></span><span class="diff-badge" id="qDiff"></span> <span class="q-house" id="qHouse"></span></span>
       </div>
       <div class="q-timer" id="qTimer"><span class="q-timer-bar"></span><b class="q-timer-num" id="qTimerNum"></b></div>
       <div class="q-player" id="qPlayer"></div>

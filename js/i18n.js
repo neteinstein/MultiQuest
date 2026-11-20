@@ -17,6 +17,8 @@
       colorTaken: 'Esta cor já foi escolhida',
       start: 'Começar o jogo',
       powers: 'Poderes',
+      streakBadge: '🔥 Série {n} · {s} s',
+      msg_powerHint: '{name} ganhou ⚡! Na tua vez, toca em ⚡ Poderes antes de lançar o dado.',
       msg_timeout: 'O tempo acabou!',
       timeLeft: 'Tempo restante',
       powersTitle: 'Poderes de {name}',
@@ -150,7 +152,7 @@
         '<li>2 a 6 jogadores, no mesmo dispositivo. Todos começam na casa 0.</li>' +
         '<li>Na sua vez, cada jogador lança o dado (1–6) e avança esse número de casas.</li>' +
         '<li>Cada casa tem um tema: Matemática, História de Portugal, Ciências, Português ou Inglês. A pergunta é sempre diferente.</li>' +
-        '<li>Há 4 opções e só 1 está certa. Acertou? Fica na casa e joga outra vez (até 3 vezes seguidas). Errou? Volta para onde estava e passa a vez.</li>' +
+        '<li>Há 4 opções e só 1 está certa. Acertou? Fica na casa e joga outra vez (até 3 vezes seguidas), mas cada pergunta extra é um nível mais difícil e tem menos 5 segundos. Errou? Volta para onde estava e passa a vez.</li>' +
         '<li>Tens 30 segundos para responder; se o tempo acabar, conta como errado.</li>' +
         '<li>Cada jogador escolhe a sua dificuldade (Fácil, Médio, Difícil ou Génio) e recebe perguntas desse nível.</li>' +
         '<li>Para ganhar é preciso chegar exatamente à casa 75 e acertar a pergunta. Se o dado passar da 75, recua o excesso a partir da 75.</li>' +
@@ -192,6 +194,8 @@
       colorTaken: 'This colour is already taken',
       start: 'Start game',
       powers: 'Powers',
+      streakBadge: '🔥 Streak {n} · {s} s',
+      msg_powerHint: '{name} earned ⚡! On your turn, tap ⚡ Powers before you roll.',
       msg_timeout: "Time's up!",
       timeLeft: 'Time left',
       powersTitle: "{name}'s powers",
@@ -325,7 +329,7 @@
         '<li>2 to 6 players on the same device. Everyone starts on house 0.</li>' +
         '<li>On your turn, roll the die (1–6) and move that many houses forward.</li>' +
         '<li>Every house has a topic: Maths, Portuguese History, Science, Portuguese or English. The question is always a new one.</li>' +
-        '<li>There are 4 options and only 1 is right. Right? You stay and roll again (up to 3 times in a row). Wrong? You go back to where you were and the next player plays.</li>' +
+        '<li>There are 4 options and only 1 is right. Right? You stay and roll again (up to 3 times in a row), but each extra question is one level harder with 5 seconds less. Wrong? You go back to where you were and the next player plays.</li>' +
         '<li>You have 30 seconds to answer; running out of time counts as wrong.</li>' +
         '<li>Each player picks their own difficulty (Easy, Medium, Hard or Genius) and gets questions at that level.</li>' +
         '<li>To win you must land exactly on house 75 and answer correctly. If the roll goes past 75 you move back the excess from 75.</li>' +
