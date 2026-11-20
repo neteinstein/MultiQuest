@@ -37,7 +37,14 @@
           <span class="label" data-i18n="numPlayers"></span>
           <div class="count-picker" id="countPicker"></div>
         </div>
-        <div id="playerRows" class="player-rows"></div>
+        <div class="carousel">
+          <div id="playerRows" class="player-rows"></div>
+        </div>
+        <div class="carousel-nav" id="carouselNav">
+          <button type="button" class="nav-btn" id="prevPlayer" data-i18n-aria="prevPlayer" data-i18n-title="prevPlayer">‹</button>
+          <div class="dots" id="playerDots"></div>
+          <button type="button" class="nav-btn next" id="nextPlayer"><span data-i18n="nextPlayer"></span> ›</button>
+        </div>
         <button type="button" class="primary big" id="startBtn" data-i18n="start"></button>
       </div>
     </section>
@@ -133,6 +140,7 @@
   </div>
 
   <div class="toasts" id="toasts" aria-live="polite"></div>
+  <div id="fx" aria-hidden="true"></div>
 
   <script src="js/rules.js"></script>
   <script src="js/i18n.js"></script>

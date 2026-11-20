@@ -90,15 +90,17 @@
 
     var rows = $('playerRows');
     var focusedName = document.activeElement && document.activeElement.dataset && document.activeElement.dataset.nameFor;
+    var keepScroll = rows.scrollLeft;
     rows.innerHTML = '';
     for (var i = 0; i < setup.count; i++) {
       var p = setup.players[i];
       var used = takenColors(i);
-      var html = '<div class="player-row" style="--pc:' + p.color + '">' +
+      var html = '<div class="player-row" data-slide="' + i + '" style="--pc:' + p.color + '" role="group" aria-label="' + esc(t('playerN', { n: i + 1 })) + '">' +
         '<div class="row-head">' +
         avatarHtml(p.avatar, p.color, 'preview') +
         '<label class="name-field"><span class="label">' + esc(t('playerN', { n: i + 1 })) + '</span>' +
         '<input type="text" maxlength="16" data-name-for="' + i + '" value="' + esc(p.name) + '" placeholder="' + esc(t('playerN', { n: i + 1 })) + '" aria-label="' + esc(t('name')) + '"></label>' +
+        '<span class="row-sub">' + esc(t('avatar_' + p.avatar)) + ' · ' + esc(t('motion_' + p.avatar)) + '</span>' +
         '</div>' +
         '<div class="label">' + esc(t('avatar')) + '</div>' +
         '<div class="avatar-picker">';
@@ -121,19 +123,106 @@
       html += '</div></div>';
       rows.insertAdjacentHTML('beforeend', html);
     }
+    rows.scrollLeft = keepScroll;
     if (focusedName != null) {
       var inp = rows.querySelector('[data-name-for="' + focusedName + '"]');
-      if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
+      if (inp) { inp.focus({ preventScroll: true }); inp.setSelectionRange(inp.value.length, inp.value.length); }
     }
+    slide = Math.min(slide, maxSlide());
+    renderNav();
+  }
+
+  // ------------------------------------------------------- player carousel
+  // Players are set up one card at a time (two or three side by side on wider
+  // screens): swipe, use the arrows or the dots to move between them.
+  var slide = 0;
+  var pendingSlide = null, pendingTimer = null;
+
+  // How many cards fit side by side: set in CSS (--per) by screen width.
+  function perView() {
+    var first = $('playerRows').children[0];
+    return first ? (parseInt(getComputedStyle(first).getPropertyValue('--per'), 10) || 1) : 1;
+  }
+  function maxSlide() { return Math.max(0, setup.count - perView()); }
+  function slideStep() {
+    var rows = $('playerRows');
+    var a = rows.children[0], b = rows.children[1];
+    if (!a) return 1;
+    return b ? b.offsetLeft - a.offsetLeft : a.offsetWidth;
+  }
+
+  function goToSlide(i, instant) {
+    slide = Math.max(0, Math.min(i, maxSlide()));
+    // Ignore the scroll events of our own smooth scroll until it arrives.
+    pendingSlide = instant || reduceMotion ? null : slide;
+    clearTimeout(pendingTimer);
+    pendingTimer = setTimeout(function () { pendingSlide = null; onRowsScroll(); }, 800);
+    $('playerRows').scrollTo({ left: slide * slideStep(), behavior: instant || reduceMotion ? 'auto' : 'smooth' });
+    renderNav();
+  }
+
+  function onRowsScroll() {
+    var i = Math.max(0, Math.min(Math.round($('playerRows').scrollLeft / slideStep()), maxSlide()));
+    if (pendingSlide != null) {
+      if (i !== pendingSlide) return;
+      pendingSlide = null;
+    }
+    if (i !== slide) { slide = i; renderNav(); }
+  }
+
+  function renderNav() {
+    var pv = perView();
+    var dots = $('playerDots');
+    var html = '';
+    for (var i = 0; i < setup.count; i++) {
+      var on = i >= slide && i < slide + pv;
+      html += '<button type="button" class="dot' + (on ? ' active' : '') + '" data-slide="' + i + '" style="--pc:' + setup.players[i].color + '"' +
+        ' aria-label="' + esc(t('goToPlayer', { n: i + 1 })) + '"' + (on ? ' aria-current="true"' : '') + '>' +
+        avatarHtml(setup.players[i].avatar, setup.players[i].color) + '</button>';
+    }
+    dots.innerHTML = html;
+    $('prevPlayer').disabled = slide <= 0;
+    $('nextPlayer').disabled = slide >= maxSlide();
+    $('carouselNav').classList.toggle('all-visible', maxSlide() === 0);
+    var rows = $('playerRows').children;
+    for (var j = 0; j < rows.length; j++) rows[j].classList.toggle('in-view', j >= slide && j < slide + pv);
+    // The background follows the player you are looking at.
+    if (pv === 1 && setup.players[slide] && !state) setTheme(setup.players[slide].avatar);
+  }
+
+  // ------------------------------------------------------------ sparkles
+  function burst(x, y, colors, n, spread) {
+    if (reduceMotion) return;
+    var fx = $('fx');
+    var made = [];
+    for (var i = 0; i < n; i++) {
+      var s = document.createElement('i');
+      var a = Math.random() * Math.PI * 2;
+      var d = spread * (0.45 + Math.random() * 0.75);
+      s.className = Math.random() < 0.45 ? 'star' : '';
+      s.style.cssText = 'left:' + x + 'px;top:' + y + 'px;--dx:' + (Math.cos(a) * d).toFixed(1) + 'px;--dy:' + (Math.sin(a) * d).toFixed(1) +
+        'px;--c:' + colors[i % colors.length] + ';animation-duration:' + (550 + Math.random() * 550).toFixed(0) + 'ms';
+      fx.appendChild(s);
+      made.push(s);
+    }
+    setTimeout(function () { made.forEach(function (s) { s.remove(); }); }, 1300);
+  }
+
+  function burstAt(el, colors, n, spread) {
+    if (!el) return;
+    var r = el.getBoundingClientRect();
+    burst(r.left + r.width / 2, r.top + r.height / 2, colors, n, spread);
   }
 
   function onSetupClick(e) {
     var b = e.target.closest('button');
     if (!b) return;
     if (b.dataset.count) {
+      var grew = +b.dataset.count > setup.count;
       setup.count = +b.dataset.count;
       ensureUniqueColors();
       renderSetup();
+      if (grew) goToSlide(setup.count - 1);
     } else if (b.classList.contains('avatar-opt')) {
       setup.players[+b.dataset.player].avatar = b.dataset.avatar;
       renderSetup();
@@ -176,7 +265,7 @@
   function newGame(players) {
     state = {
       players: players.map(function (p, i) {
-        return { idx: i, name: (p.name || '').trim(), avatar: p.avatar, color: p.color, level: p.level || 2, pos: 0, skip: 0 };
+        return { idx: i, name: (p.name || '').trim(), avatar: p.avatar, color: p.color, level: p.level || 2, pos: 0, skip: 0, bonus: 0 };
       }),
       current: 0,
       topics: R.assignTopics(),
@@ -348,6 +437,7 @@
     }
     avatar.classList.remove('step');
     tok.classList.remove('walking');
+    burstAt(tok, [p.color, '#ffffff'], 10, 40);
     tok.style.removeProperty('--step-ms');
     tok.style.removeProperty('--ease');
   }
@@ -363,6 +453,7 @@
     tok.classList.remove('no-anim', 'vanish');
     retrigger(tok, 'appear');
     flashCell(to);
+    burstAt(tok, ['#d59cff', '#ffffff', '#8e44ad'], 18, 70);
     renderTurnPos();
     await sleep(reduceMotion ? 50 : 550);
     tok.classList.remove('appear');
@@ -544,6 +635,12 @@
       log('msg_correct', { name: nameOf(p), n: p.pos }, { kind: 'good' });
       if (p.pos === R.BOARD_SIZE) return win(p);
       await settle(p);
+      if (R.earnsBonusRoll(p.bonus)) {
+        p.bonus++;
+        log('msg_bonus', { name: nameOf(p), k: p.bonus, max: R.MAX_BONUS_ROLLS }, { toast: true, kind: 'good' });
+        return endTurn(true);
+      }
+      log('msg_bonusMax', { name: nameOf(p), max: R.MAX_BONUS_ROLLS }, { kind: 'warn' });
     } else {
       log('msg_wrong', { name: nameOf(p), n: from }, { kind: 'bad' });
       await slideTo(p, from, 'retreat', 750);
@@ -567,7 +664,10 @@
 
   async function endTurn(extra) {
     if (!state || state.winner) return;
-    if (!extra) state.current = (state.current + 1) % state.players.length;
+    if (!extra) {
+      cur().bonus = 0;
+      state.current = (state.current + 1) % state.players.length;
+    }
     await sleep(250);
     startTurn();
   }
@@ -580,6 +680,7 @@
     log('msg_win', { name: nameOf(p) }, { kind: 'good' });
     flashCell(R.BOARD_SIZE, 'boom');
     tokenEl(p).classList.add('champion');
+    burstAt(cellEl(R.BOARD_SIZE), ['#ffd54f', '#ffffff', p.color, '#ff8a65'], 40, 180);
     renderWin();
     var conf = $('confetti');
     var colors = state.players.map(function (x) { return x.color; });
@@ -616,6 +717,7 @@
     var q = s.q;
     var badge = $('qTopic');
     badge.className = 'topic-badge topic-' + q.topic;
+    document.querySelector('.question-modal').dataset.topic = q.topic;
     badge.textContent = TOPIC_ICON[q.topic] + ' ' + t('topic_' + q.topic);
     $('qHouse').textContent = t('house', { n: s.p.pos });
     $('qDiff').className = 'diff-badge lvl-' + s.p.level;
@@ -689,7 +791,10 @@
     renderQuestion();
     var modal = document.querySelector('.question-modal');
     retrigger(modal, i === s.q.correct ? 'cheer' : 'shake');
-    if (i === s.q.correct) startAutoClose();
+    if (i === s.q.correct) {
+      burstAt($('qOptions').querySelector('.correct'), ['#ffd54f', '#ffffff', s.p.color, '#7cf5c4'], 28, 140);
+      startAutoClose();
+    }
     $('qContinue').focus();
   }
 
@@ -765,6 +870,26 @@
     $('countPicker').addEventListener('click', onSetupClick);
     $('playerRows').addEventListener('click', onSetupClick);
     $('playerRows').addEventListener('input', onSetupInput);
+    $('playerRows').addEventListener('scroll', onRowsScroll, { passive: true });
+    $('playerRows').addEventListener('keydown', function (e) {
+      // Enter in a name moves on to the next player.
+      if (e.key !== 'Enter' || e.target.dataset.nameFor == null) return;
+      e.preventDefault();
+      var i = +e.target.dataset.nameFor;
+      if (i < setup.count - 1) {
+        goToSlide(Math.max(slide, i + 2 - perView()));
+        var next = $('playerRows').querySelector('[data-name-for="' + (i + 1) + '"]');
+        if (next) next.focus({ preventScroll: true });
+      } else {
+        $('startBtn').focus();
+      }
+    });
+    $('prevPlayer').addEventListener('click', function () { goToSlide(slide - 1); });
+    $('nextPlayer').addEventListener('click', function () { goToSlide(slide + 1); });
+    $('playerDots').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-slide]');
+      if (b) goToSlide(+b.dataset.slide);
+    });
     $('startBtn').addEventListener('click', function () { newGame(setup.players.slice(0, setup.count)); });
     $('rollBtn').addEventListener('click', onRoll);
     $('qOptions').addEventListener('click', function (e) {
@@ -814,7 +939,7 @@
     function onResize() {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(function () {
-        if (!state) return;
+        if (!state) { goToSlide(slide, true); return; }
         if (fitBoard()) renderBoard();
         layoutTokens(true);
       }, 80);

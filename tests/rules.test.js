@@ -142,3 +142,10 @@ test('maths answers are correct', () => {
     } else assert.fail('unrecognised maths question: ' + text);
   }
 });
+
+test('a right answer earns another roll, up to 3 in a row', () => {
+  assert.equal(R.MAX_BONUS_ROLLS, 3);
+  assert.equal(R.earnsBonusRoll(0), true);
+  assert.equal(R.earnsBonusRoll(2), true);
+  assert.equal(R.earnsBonusRoll(3), false);
+});

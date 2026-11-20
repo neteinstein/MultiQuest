@@ -16,6 +16,9 @@
       color: 'Cor',
       colorTaken: 'Esta cor já foi escolhida',
       start: 'Começar o jogo',
+      nextPlayer: 'Seguinte',
+      prevPlayer: 'Jogador anterior',
+      goToPlayer: 'Ir para o jogador {n}',
       roll: 'Lançar o dado',
       rollHint: 'Espaço para lançar',
       turnOf: 'Vez de',
@@ -75,6 +78,8 @@
       msg_skip: 'Casa 10: {name} fica uma vez sem jogar.',
       msg_teleport: 'Casa {house}: teletransporte para a casa 21!',
       msg_correct: 'Certo! {name} fica na casa {n}.',
+      msg_bonus: 'Certo! {name} joga outra vez ({k}/{max}).',
+      msg_bonusMax: '{name} já jogou {max} vezes extra seguidas — passa a vez.',
       msg_wrong: 'Errado! {name} volta para a casa {n}.',
       msg_rightWas: 'A resposta certa era: {a}',
       msg_collision: '{victim} estava na casa {n} primeiro e vai para a casa 25!',
@@ -90,7 +95,7 @@
         '<li>2 a 6 jogadores, no mesmo dispositivo. Todos começam na casa 0.</li>' +
         '<li>Na sua vez, cada jogador lança o dado (1–6) e avança esse número de casas.</li>' +
         '<li>Cada casa tem um tema: Matemática, História de Portugal, Ciências, Português ou Inglês. A pergunta é sempre diferente.</li>' +
-        '<li>Há 4 opções e só 1 está certa. Acertou? Fica na casa. Errou? Volta para onde estava. Depois passa a vez.</li>' +
+        '<li>Há 4 opções e só 1 está certa. Acertou? Fica na casa e joga outra vez (até 3 vezes seguidas). Errou? Volta para onde estava e passa a vez.</li>' +
         '<li>Cada jogador escolhe a sua dificuldade (Fácil, Médio, Difícil ou Génio) e recebe perguntas desse nível.</li>' +
         '<li>Para ganhar é preciso chegar exatamente à casa 75 e acertar a pergunta. Se o dado passar da 75, recua o excesso a partir da 75.</li>' +
         '<li>Se chegar a uma casa onde já está outro jogador, quem lá estava primeiro vai para a casa 25.</li>' +
@@ -119,6 +124,9 @@
       color: 'Colour',
       colorTaken: 'This colour is already taken',
       start: 'Start game',
+      nextPlayer: 'Next',
+      prevPlayer: 'Previous player',
+      goToPlayer: 'Go to player {n}',
       roll: 'Roll the die',
       rollHint: 'Space to roll',
       turnOf: 'Turn of',
@@ -178,6 +186,8 @@
       msg_skip: 'House 10: {name} misses the next turn.',
       msg_teleport: 'House {house}: teleport to house 21!',
       msg_correct: 'Correct! {name} stays on house {n}.',
+      msg_bonus: 'Correct! {name} rolls again ({k}/{max}).',
+      msg_bonusMax: '{name} has had {max} extra rolls in a row — next player.',
       msg_wrong: 'Wrong! {name} goes back to house {n}.',
       msg_rightWas: 'The right answer was: {a}',
       msg_collision: '{victim} was on house {n} first and goes to house 25!',
@@ -193,7 +203,7 @@
         '<li>2 to 6 players on the same device. Everyone starts on house 0.</li>' +
         '<li>On your turn, roll the die (1–6) and move that many houses forward.</li>' +
         '<li>Every house has a topic: Maths, Portuguese History, Science, Portuguese or English. The question is always a new one.</li>' +
-        '<li>There are 4 options and only 1 is right. Right? You stay. Wrong? You go back to where you were. Then the next player plays.</li>' +
+        '<li>There are 4 options and only 1 is right. Right? You stay and roll again (up to 3 times in a row). Wrong? You go back to where you were and the next player plays.</li>' +
         '<li>Each player picks their own difficulty (Easy, Medium, Hard or Genius) and gets questions at that level.</li>' +
         '<li>To win you must land exactly on house 75 and answer correctly. If the roll goes past 75 you move back the excess from 75.</li>' +
         '<li>If you land on a house where another player already is, the player who was there first goes to house 25.</li>' +
