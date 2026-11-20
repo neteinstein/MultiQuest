@@ -26,6 +26,22 @@ Abra o link no browser do telemóvel e escolha **Instalar app** (Android/Chrome)
 - Para ganhar é preciso chegar **exatamente** à casa 75 e acertar a pergunta. Se o dado passar da 75, recua o excesso a partir da 75.
 - Se um jogador chegar a uma casa onde já está outro, **quem lá estava primeiro vai para a casa 25**.
 
+### Poderes ⚡
+
+Cada resposta certa dá 1 ⚡ de energia (até 3). Na sua vez, antes de lançar o dado, cada jogador pode usar um poder:
+
+| Poder | Custo | Efeito |
+|---|---|---|
+| ⚔️ Duelo | 1 | Desafia um jogador até 6 casas de distância. Os dois respondem à mesma pergunta, à vez e sem espreitar (primeiro o desafiado). Ganha a resposta certa mais rápida; quem perde recua 3 casas. |
+| ❄️ Congelar | 1 | Um jogador fica uma vez sem jogar. Ninguém é congelado duas vezes seguidas. |
+| 🔄 Troca | 2 | Troca de lugar com o jogador logo à frente. |
+| 🔥 Pergunta difícil | 1 | A próxima pergunta de um jogador é um nível acima. |
+| 🛡️ Escudo | 1 | Bloqueia o próximo ataque e evita ir para a casa 25. |
+| 🪤 Armadilha | 1 | Numa casa à escolha: quem lá cair responde a uma pergunta do tema escolhido, um nível acima. |
+| 🕵️ Roubar a pergunta | 1 | Quando alguém erra, o jogador seguinte pode responder à mesma pergunta; se acertar, avança as casas que o outro perdeu. |
+
+Cada pergunta tem 30 segundos; se o tempo acabar, conta como errada.
+
 ### Casas especiais
 
 | Casa | Efeito |
