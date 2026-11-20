@@ -1,0 +1,19 @@
+{
+  "name": "MultiQuest",
+  "short_name": "MultiQuest",
+  "description": "Jogo de tabuleiro de perguntas para 2 a 6 jogadores / Quiz board game for 2 to 6 players",
+  "lang": "pt",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#eef3fb",
+  "theme_color": "#1f4e9c",
+  "categories": ["games", "education"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

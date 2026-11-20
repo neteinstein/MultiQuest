@@ -27,7 +27,7 @@ jobs:
       - name: Stage site
         run: |
           mkdir -p _site
-          cp -r index.html css js _site/
+          cp -r index.html manifest.webmanifest sw.js icons css js _site/
           # Cache-bust: tag every script and stylesheet with this commit so
           # browsers fetch the new files right after a deploy.
           v="${GITHUB_SHA::8}"
