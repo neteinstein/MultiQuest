@@ -10,6 +10,11 @@ Abra `index.html` num browser — não é preciso instalar nada.
 
 Online: https://neteinstein.github.io/MultiQuest/ (publicado automaticamente pelo GitHub Actions a cada push para `main`).
 
+### Instalar no telemóvel / Install on your phone
+
+Abra o link no browser do telemóvel e escolha **Instalar app** (Android/Chrome) ou **Partilhar → Adicionar ao ecrã principal** (iPhone/Safari). Depois de instalado abre em ecrã inteiro e funciona sem internet.
+*Open the link in your phone's browser and choose **Install app** (Android/Chrome) or **Share → Add to Home Screen** (iPhone/Safari). It then opens full screen and works offline.*
+
 ## Regras
 
 - O tabuleiro tem as casas 1 a 75; todos começam na casa 0.
@@ -48,6 +53,7 @@ Atalhos: **Espaço** para lançar o dado, **1–4** para responder.
 - `js/questions.js` — perguntas bilingues + geradores (matemática por dificuldade, vocabulário, antónimos)
 - `js/avatars.js` — desenhos SVG, movimentos e temas
 - `js/game.js` — interface e fluxo de turnos
+- `manifest.webmanifest`, `sw.js`, `icons/` — app instalável (PWA) e modo offline
 - `js/i18n.js` — textos PT/EN
 
 ## Testes
