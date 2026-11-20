@@ -312,7 +312,14 @@
     var W = area.clientWidth, H = area.clientHeight;
     if (!W || !H) return false;
     var small = Math.min(W, H) < 520;
-    var gap = small ? 3 : 5, pad = small ? 5 : 10;
+    // The board lies on the table, tilted away from the player: less tilt on
+    // tall (phone) screens. Leave room for the wooden frame and for the near
+    // edge, which perspective makes a little wider.
+    var tilt = W > H ? 22 : 12;
+    var frame = small ? 7 : 12;
+    W = W * (W > H ? 0.9 : 0.95) - 2 * frame;
+    H = H / Math.cos(tilt * Math.PI / 180) * 0.94 - 2 * frame - 12;
+    var gap = small ? 4 : 7, pad = small ? 6 : 12;
     var n = R.BOARD_SIZE + 1;
     var best = null;
     for (var c = 4; c <= 20; c++) {
@@ -324,6 +331,8 @@
     board.style.setProperty('--cs', Math.max(best.cell, 12) + 'px');
     board.style.setProperty('--gap', gap + 'px');
     board.style.setProperty('--pad', pad + 'px');
+    board.style.setProperty('--frame', frame + 'px');
+    $('boardWrap').style.setProperty('--tilt', tilt + 'deg');
     var changed = best.c !== cols;
     cols = best.c;
     board.style.setProperty('--cols', cols);
@@ -369,6 +378,24 @@
       html += '<div class="' + cls + '" data-house="' + h + '" title="' + esc(title) + '" style="grid-row:' + (row + 1) + ';grid-column:' + (col + 1) + '">' + inner + '</div>';
     }
     board.innerHTML = html;
+    drawRoad();
+  }
+
+  // A road painted on the board, joining the squares in order from 0 to 75.
+  function drawRoad() {
+    var board = $('board');
+    var old = board.querySelector('.road');
+    if (old) old.remove();
+    var pts = [];
+    for (var h = 0; h <= R.BOARD_SIZE; h++) {
+      var c = cellEl(h);
+      if (c) pts.push((c.offsetLeft + c.offsetWidth / 2).toFixed(1) + ',' + (c.offsetTop + c.offsetHeight / 2).toFixed(1));
+    }
+    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('class', 'road');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.innerHTML = '<polyline class="road-bed" points="' + pts.join(' ') + '"/><polyline class="road-line" points="' + pts.join(' ') + '"/>';
+    board.insertBefore(svg, board.firstChild);
   }
 
   function cellEl(h) { return $('board').querySelector('[data-house="' + h + '"]'); }
@@ -1443,6 +1470,7 @@
       resizeTimer = setTimeout(function () {
         if (!state) { goToSlide(slide, true); return; }
         if (fitBoard()) renderBoard();
+        else drawRoad();
         layoutTokens(true);
       }, 80);
     }

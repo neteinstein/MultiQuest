@@ -1127,3 +1127,63 @@ body::after {
 @keyframes sheen-bg { 0% { background-position: 150% 0; } 45%, 100% { background-position: -50% 0; } }
 .roll-btn:disabled { opacity: 1; background-color: color-mix(in srgb, var(--accent) 55%, #777); }
 .roll-btn:disabled .roll-label { opacity: .6; }
+
+/* ===================================================== a real board */
+/* The board is a thick printed board with a wooden frame, lying on the table
+   and tilted away from the player. The pawns stand up on it. */
+.board-wrap {
+  transform: perspective(1500px) rotateX(var(--tilt, 0deg));
+  transform-origin: 50% 55%;
+  transform-style: preserve-3d;
+}
+.board {
+  position: relative;
+  border: var(--frame, 10px) solid transparent;
+  border-radius: calc(var(--frame, 10px) + 10px);
+  background:
+    var(--board-bg) padding-box,
+    linear-gradient(90deg, rgba(0,0,0,.18), transparent 12%, transparent 88%, rgba(0,0,0,.18)) border-box,
+    repeating-linear-gradient(92deg, #7a4a22 0 2px, #8d5a2b 2px 5px, #9b6633 5px 9px, #87552a 9px 12px, #a06b37 12px 17px) border-box;
+  box-shadow:
+    inset 0 0 0 2px rgba(255,255,255,.12), inset 0 6px 18px rgba(0,0,0,.35),
+    0 2px 0 #6b4220, 0 6px 0 #5a3519, 0 10px 0 #4a2b14,
+    0 24px 30px rgba(0,0,0,.45), 0 50px 70px -20px rgba(0,0,0,.5);
+}
+/* Printed paper texture on the board's surface. */
+.board::after {
+  content: ""; position: absolute; inset: 0; border-radius: 10px; pointer-events: none; z-index: 0;
+  background-image:
+    radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px),
+    radial-gradient(rgba(0,0,0,.06) 1px, transparent 1px);
+  background-size: 7px 7px, 11px 11px;
+  background-position: 0 0, 3px 5px;
+}
+.road { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 0; }
+.road polyline { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.road-bed { stroke: rgba(0,0,0,.28); stroke-width: calc(var(--cs, 56px) * .42); }
+.road-line { stroke: rgba(255,240,200,.75); stroke-width: max(2px, calc(var(--cs, 56px) * .06)); stroke-dasharray: 6 7; }
+.cell { z-index: 1; }
+/* Tiles: printed card with a thickness and a shadow on the board. */
+.cell {
+  background-image:
+    linear-gradient(180deg, rgba(255,255,255,.35), rgba(255,255,255,0) 45%),
+    radial-gradient(rgba(0,0,0,.035) 1px, transparent 1px);
+  background-size: auto, 5px 5px;
+  box-shadow:
+    inset 0 0 0 2px color-mix(in srgb, var(--topic, #999) 35%, transparent),
+    0 2px 0 color-mix(in srgb, var(--topic, #999) 55%, #000),
+    0 4px 0 rgba(0,0,0,.25),
+    0 6px 8px rgba(0,0,0,.25);
+}
+.cell::before { display: none; }
+.cell .num { text-shadow: 0 1px 0 rgba(255,255,255,.6); }
+.cell .icon { filter: drop-shadow(0 2px 1px rgba(0,0,0,.25)); }
+/* Pawns stand upright on the tilted board; their base disc lies flat on it. */
+.tokens, .token { transform-style: preserve-3d; }
+.token .avatar { rotate: x calc(-1 * var(--tilt, 0deg)); transform-origin: 50% 92%; }
+.token .base {
+  background: radial-gradient(ellipse at 50% 40%, color-mix(in srgb, var(--pc) 85%, #fff), var(--pc) 60%, color-mix(in srgb, var(--pc) 60%, #000));
+  box-shadow: 0 0 0 2px #fff, 0 2px 0 color-mix(in srgb, var(--pc) 50%, #000), 0 4px 8px rgba(0,0,0,.5);
+}
+/* A soft pool of light on the table under the board. */
+.board-area { background: radial-gradient(60% 55% at 50% 50%, rgba(255,255,255,.12), transparent 70%); }
