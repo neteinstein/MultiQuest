@@ -1549,6 +1549,189 @@
     delicious|more delicious|most delicious
   `);
 
+  // ============================================= genius: physics, chemistry
+  // Compounds: name pt | name en | formula (with subscripts) | composition (El:count,…)
+  var COMPOUNDS = rows(`
+    água|water|H₂O|H:2,O:1
+    dióxido de carbono|carbon dioxide|CO₂|C:1,O:2
+    monóxido de carbono|carbon monoxide|CO|C:1,O:1
+    cloreto de sódio (sal de cozinha)|sodium chloride (table salt)|NaCl|Na:1,Cl:1
+    metano|methane|CH₄|C:1,H:4
+    amoníaco|ammonia|NH₃|N:1,H:3
+    ozono|ozone|O₃|O:3
+    ácido sulfúrico|sulfuric acid|H₂SO₄|H:2,S:1,O:4
+    ácido clorídrico|hydrochloric acid|HCl|H:1,Cl:1
+    hidróxido de sódio|sodium hydroxide|NaOH|Na:1,O:1,H:1
+    glicose|glucose|C₆H₁₂O₆|C:6,H:12,O:6
+    carbonato de cálcio|calcium carbonate|CaCO₃|Ca:1,C:1,O:3
+    peróxido de hidrogénio (água oxigenada)|hydrogen peroxide|H₂O₂|H:2,O:2
+    dióxido de enxofre|sulfur dioxide|SO₂|S:1,O:2
+    ácido nítrico|nitric acid|HNO₃|H:1,N:1,O:3
+    bicarbonato de sódio|sodium bicarbonate|NaHCO₃|Na:1,H:1,C:1,O:3
+    óxido de ferro(III) (ferrugem)|iron(III) oxide (rust)|Fe₂O₃|Fe:2,O:3
+    etanol|ethanol|C₂H₆O|C:2,H:6,O:1
+    oxigénio (molécula)|oxygen (molecule)|O₂|O:2
+    azoto (molécula)|nitrogen (molecule)|N₂|N:2
+    óxido de cálcio (cal viva)|calcium oxide (quicklime)|CaO|Ca:1,O:1
+    sulfato de cobre(II)|copper(II) sulfate|CuSO₄|Cu:1,S:1,O:4
+  `);
+  // Rounded molar masses used in school (g/mol)
+  var ATOMIC_MASS = { H: 1, C: 12, N: 14, O: 16, Na: 23, S: 32, Cl: 35.5, Ca: 40, Fe: 56, Cu: 63.5 };
+
+  // Isotopes: symbol | mass number (Z comes from ELEMENTS)
+  var ISOTOPES = rows(`
+    H|1
+    H|2
+    He|4
+    C|12
+    C|14
+    N|14
+    O|16
+    O|18
+    Na|23
+    Mg|24
+    Al|27
+    Cl|35
+    Cl|37
+    K|39
+    Ca|40
+    Fe|56
+    Cu|63
+    Ag|107
+    Au|197
+    Pb|208
+    U|235
+    U|238
+  `);
+  // Ions: symbol | charge
+  var IONS = rows(`
+    Na|1
+    K|1
+    Li|1
+    Mg|2
+    Ca|2
+    Al|3
+    F|-1
+    Cl|-1
+    Br|-1
+    O|-2
+    S|-2
+  `);
+
+  // Everyday substances: pt | en | acid / neutral / base
+  var PH_SUBSTANCES = rows(`
+    sumo de limão|lemon juice|acid
+    vinagre|vinegar|acid
+    suco gástrico|stomach acid|acid
+    refrigerante de cola|cola drink|acid
+    café|coffee|acid
+    água pura|pure water|neutral
+    lixívia|bleach|base
+    sabão|soap|base
+    amoníaco de limpeza|household ammonia|base
+    solução de bicarbonato de sódio|baking soda solution|base
+    pasta de dentes|toothpaste|base
+    desentupidor de canos|drain cleaner|base
+  `);
+  var PH_NAMES = {
+    acid: { pt: 'ácida', en: 'acidic', apt: 'ácida', aen: 'acidic' },
+    neutral: { pt: 'neutra', en: 'neutral', apt: 'neutra', aen: 'neutral' },
+    base: { pt: 'básica (alcalina)', en: 'basic (alkaline)', apt: 'básica', aen: 'basic' }
+  };
+
+  // Changes: pt | en | physical or chemical
+  var CHANGES = rows(`
+    a água a ferver|water boiling|physical
+    o gelo a derreter|ice melting|physical
+    o açúcar a dissolver-se na água|sugar dissolving in water|physical
+    um copo a partir-se|a glass breaking|physical
+    a água do mar a evaporar|seawater evaporating|physical
+    o chocolate a derreter|chocolate melting|physical
+    o vapor a condensar no vidro|steam condensing on glass|physical
+    a manteiga a derreter|butter melting|physical
+    um papel a ser rasgado|paper being torn|physical
+    o papel a arder|paper burning|chemical
+    o ferro a enferrujar|iron rusting|chemical
+    um ovo a cozer|an egg cooking|chemical
+    a fruta a apodrecer|fruit rotting|chemical
+    o leite a azedar|milk going sour|chemical
+    o fogo de artifício a explodir|fireworks exploding|chemical
+    a fotossíntese nas folhas|photosynthesis in leaves|chemical
+    a digestão dos alimentos|digesting food|chemical
+    a massa do pão a levedar|bread dough rising|chemical
+  `);
+
+  // Separation techniques: mixture pt | mixture en | technique pt | technique en
+  var SEPARATION = rows(`
+    areia e água|sand and water|filtração|filtration
+    sal dissolvido em água (para obter o sal)|salt dissolved in water (to get the salt)|evaporação|evaporation
+    água e álcool|water and alcohol|destilação fracionada|fractional distillation
+    limalha de ferro e areia|iron filings and sand|separação magnética|magnetic separation
+    azeite e água|olive oil and water|funil de decantação|separating funnel
+    os pigmentos da tinta de uma caneta|the pigments in pen ink|cromatografia|chromatography
+  `);
+
+  // Conductors and insulators: pt | en | conductor (1) or insulator (0)
+  var CONDUCTORS = rows(`
+    cobre|copper|1
+    alumínio|aluminium|1
+    ferro|iron|1
+    prata|silver|1
+    ouro|gold|1
+    grafite|graphite|1
+    água salgada|salt water|1
+    plástico|plastic|0
+    borracha|rubber|0
+    vidro|glass|0
+    madeira seca|dry wood|0
+    cerâmica|ceramic|0
+    papel|paper|0
+    ar seco|dry air|0
+  `);
+
+  // Physics facts: question pt | question en | right pt~en | wrong pt~en ×3
+  var PHYSICS_FACTS = rows(`
+    Qual é aproximadamente a velocidade da luz no vazio?|What is the approximate speed of light in a vacuum?|300 000 km/s~300,000 km/s|300 km/s~300 km/s|340 m/s~340 m/s|30 000 km/h~30,000 km/h
+    Qual é aproximadamente a velocidade do som no ar?|What is the approximate speed of sound in air?|340 m/s~340 m/s|300 000 km/s~300,000 km/s|34 m/s~34 m/s|3400 km/s~3,400 km/s
+    Qual é o valor aproximado da aceleração da gravidade na Terra?|What is the approximate acceleration due to gravity on Earth?|9,8 m/s²~9.8 m/s²|1,6 m/s²~1.6 m/s²|98 m/s²~98 m/s²|0,98 m/s²~0.98 m/s²
+    Que lei diz que um corpo mantém o seu movimento se nenhuma força o alterar?|Which law says a body keeps its motion unless a force changes it?|1.ª lei de Newton (inércia)~Newton's 1st law (inertia)|2.ª lei de Newton~Newton's 2nd law|3.ª lei de Newton~Newton's 3rd law|Lei de Ohm~Ohm's law
+    Que lei de Newton diz que F = m × a?|Which of Newton's laws says F = m × a?|2.ª lei~2nd law|1.ª lei~1st law|3.ª lei~3rd law|Lei da gravitação~Law of gravitation
+    Que lei diz que a toda a ação corresponde uma reação igual e oposta?|Which law says every action has an equal and opposite reaction?|3.ª lei de Newton~Newton's 3rd law|1.ª lei de Newton~Newton's 1st law|2.ª lei de Newton~Newton's 2nd law|Lei de Hooke~Hooke's law
+    A que temperatura corresponde o zero absoluto?|What temperature is absolute zero?|−273,15 °C~−273.15 °C|0 °C~0 °C|−100 °C~−100 °C|−459 °C~−459 °C
+    O som propaga-se no vazio?|Does sound travel through a vacuum?|Não, precisa de um meio~No, it needs a medium|Sim, mais depressa~Yes, faster|Sim, à mesma velocidade~Yes, at the same speed|Só se for agudo~Only high-pitched sound
+    O que mede um ano-luz?|What does a light year measure?|Uma distância~A distance|Um tempo~A time|Uma velocidade~A speed|Uma energia~An energy
+    Quem propôs a equação E = mc²?|Who proposed the equation E = mc²?|Albert Einstein~Albert Einstein|Isaac Newton~Isaac Newton|Niels Bohr~Niels Bohr|Galileu~Galileo
+    Que partícula do átomo tem carga negativa?|Which particle of the atom has a negative charge?|Eletrão~Electron|Protão~Proton|Neutrão~Neutron|Núcleo~Nucleus
+    Que partícula do átomo não tem carga elétrica?|Which particle of the atom has no electric charge?|Neutrão~Neutron|Protão~Proton|Eletrão~Electron|Ião~Ion
+    Como se chama a mudança de direção da luz ao passar do ar para a água?|What is it called when light changes direction going from air into water?|Refração~Refraction|Reflexão~Reflection|Difração~Diffraction|Dispersão~Dispersion
+    Que cor da luz visível tem maior comprimento de onda?|Which colour of visible light has the longest wavelength?|Vermelho~Red|Violeta~Violet|Verde~Green|Azul~Blue
+    O que acontece ao período de um pêndulo se o fio for mais comprido?|What happens to a pendulum's period if the string is longer?|Aumenta~It increases|Diminui~It decreases|Fica igual~It stays the same|Passa a zero~It becomes zero
+    Num circuito em série, se uma lâmpada fundir, o que acontece às outras?|In a series circuit, if one bulb blows, what happens to the others?|Apagam-se~They go out|Brilham mais~They shine brighter|Não mudam~Nothing changes|Brilham menos~They shine less
+    Que tipo de energia tem um corpo em movimento?|What kind of energy does a moving body have?|Energia cinética~Kinetic energy|Energia potencial~Potential energy|Energia química~Chemical energy|Energia nuclear~Nuclear energy
+    Que tipo de energia tem uma pedra no alto de um penhasco?|What kind of energy does a rock on top of a cliff have?|Energia potencial gravítica~Gravitational potential energy|Energia cinética~Kinetic energy|Energia térmica~Thermal energy|Energia sonora~Sound energy
+    Que instrumento mede a corrente elétrica?|Which instrument measures electric current?|Amperímetro~Ammeter|Voltímetro~Voltmeter|Dinamómetro~Newton meter|Barómetro~Barometer
+    Que instrumento mede a força?|Which instrument measures force?|Dinamómetro~Newton meter (dynamometer)|Termómetro~Thermometer|Amperímetro~Ammeter|Higrómetro~Hygrometer
+  `);
+  // Chemistry facts, same shape
+  var CHEMISTRY_FACTS = rows(`
+    Quantos períodos (linhas) tem a tabela periódica?|How many periods (rows) does the periodic table have?|7~7|8~8|18~18|9~9
+    Quantos grupos (colunas) tem a tabela periódica?|How many groups (columns) does the periodic table have?|18~18|7~7|8~8|16~16
+    Qual é o pH da água pura a 25 °C?|What is the pH of pure water at 25 °C?|7~7|0~0|14~14|1~1
+    Como se chama a ligação em que dois átomos partilham eletrões?|What is the bond called where two atoms share electrons?|Ligação covalente~Covalent bond|Ligação iónica~Ionic bond|Ligação metálica~Metallic bond|Ponte de hidrogénio~Hydrogen bond
+    Que tipo de ligação existe no cloreto de sódio (NaCl)?|What kind of bond holds sodium chloride (NaCl) together?|Iónica~Ionic|Covalente~Covalent|Metálica~Metallic|Não tem ligações~It has no bonds
+    Que gás se liberta quando um metal como o zinco reage com um ácido?|Which gas is released when a metal like zinc reacts with an acid?|Hidrogénio~Hydrogen|Oxigénio~Oxygen|Dióxido de carbono~Carbon dioxide|Azoto~Nitrogen
+    Que gás turva a água de cal?|Which gas turns limewater cloudy?|Dióxido de carbono~Carbon dioxide|Oxigénio~Oxygen|Hidrogénio~Hydrogen|Azoto~Nitrogen
+    Que gás é o mais abundante no ar?|Which gas is the most abundant in air?|Azoto~Nitrogen|Oxigénio~Oxygen|Dióxido de carbono~Carbon dioxide|Árgon~Argon
+    Que cor fica o papel de tornesol azul numa solução ácida?|What colour does blue litmus paper turn in an acidic solution?|Vermelho~Red|Azul~Blue|Verde~Green|Amarelo~Yellow
+    Como se chama uma reação que liberta calor?|What is a reaction that releases heat called?|Exotérmica~Exothermic|Endotérmica~Endothermic|Neutralização~Neutralisation|Sublimação~Sublimation
+    Ácido + base dá sal + água. Como se chama esta reação?|Acid + base gives salt + water. What is this reaction called?|Neutralização~Neutralisation|Combustão~Combustion|Oxidação~Oxidation|Fermentação~Fermentation
+    Que três substâncias formam o triângulo do fogo?|Which three things make up the fire triangle?|Combustível, comburente e energia~Fuel, oxygen and heat|Água, ar e terra~Water, air and earth|Carbono, hidrogénio e azoto~Carbon, hydrogen and nitrogen|Madeira, papel e gás~Wood, paper and gas
+    Quem organizou a primeira tabela periódica?|Who organised the first periodic table?|Dmitri Mendeleev~Dmitri Mendeleev|Antoine Lavoisier~Antoine Lavoisier|John Dalton~John Dalton|Marie Curie~Marie Curie
+    Quem enunciou a lei da conservação da massa?|Who stated the law of conservation of mass?|Antoine Lavoisier~Antoine Lavoisier|Dmitri Mendeleev~Dmitri Mendeleev|Isaac Newton~Isaac Newton|Niels Bohr~Niels Bohr
+    Como se chama a passagem direta de sólido a gasoso?|What is it called when a solid turns straight into a gas?|Sublimação~Sublimation|Fusão~Melting|Vaporização~Vaporisation|Solidificação~Freezing
+    Quanto vale a constante de Avogadro (aproximadamente)?|What is Avogadro's constant (approximately)?|6,02 × 10²³ mol⁻¹~6.02 × 10²³ mol⁻¹|3,00 × 10⁸ mol⁻¹~3.00 × 10⁸ mol⁻¹|9,8 × 10²³ mol⁻¹~9.8 × 10²³ mol⁻¹|1,60 × 10⁻¹⁹ mol⁻¹~1.60 × 10⁻¹⁹ mol⁻¹
+  `);
+
   var api = {
     MONARCHS: MONARCHS, MONARCH_NO_SEQUENCE: MONARCH_NO_SEQUENCE, DYNASTIES: DYNASTIES,
     PRESIDENTS: PRESIDENTS, EVENTS: EVENTS, PEOPLE: PEOPLE, COLONIES: COLONIES,
@@ -1558,6 +1741,8 @@
     PLURALS: PLURALS, FEMININES: FEMININES, COLLECTIVES: COLLECTIVES, SYNONYMS: SYNONYMS, ANTONYMS: ANTONYMS,
     WORD_CLASSES: WORD_CLASSES, WORD_CLASS_NAMES: WORD_CLASS_NAMES, SPELLING: SPELLING,
     VOCAB: VOCAB, VOCAB_CATEGORIES: VOCAB_CATEGORIES, IRREGULAR: IRREGULAR,
+    COMPOUNDS: COMPOUNDS, ATOMIC_MASS: ATOMIC_MASS, ISOTOPES: ISOTOPES, IONS: IONS, PH_SUBSTANCES: PH_SUBSTANCES, PH_NAMES: PH_NAMES,
+    CHANGES: CHANGES, SEPARATION: SEPARATION, CONDUCTORS: CONDUCTORS, PHYSICS_FACTS: PHYSICS_FACTS, CHEMISTRY_FACTS: CHEMISTRY_FACTS,
     EN_OPPOSITES: EN_OPPOSITES, ANTONYM_CLUSTERS: ANTONYM_CLUSTERS, EN_OPPOSITE_CLUSTERS: EN_OPPOSITE_CLUSTERS, EN_PLURALS: EN_PLURALS, EN_COMPARE: EN_COMPARE
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

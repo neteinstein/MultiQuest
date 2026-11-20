@@ -917,6 +917,232 @@
     GENS.push(listGen('cmp', 'english', cmpItems));
   })();
 
+  // ===================================================== genius science
+  // Physics and chemistry, dealt on Science squares at Genius level. Numeric
+  // questions are computed, so every answer is exact.
+  (function () {
+    function num(x) { var r = Math.round(x * 100) / 100; return T(String(r).replace('.', ','), String(r)); }
+    function withUnit(x, u) { var n = num(x); return T(n.pt + ' ' + u, n.en + ' ' + u); }
+    /** Four distinct numeric options: the answer plus typical mistakes, topped up with near values. */
+    function numOpts(rand, ans, mistakes, u) {
+      var out = [ans];
+      mistakes.concat(nearNumbers(rand, ans, Math.max(2, Math.round(Math.abs(ans) / 3)), 0, ans * 4 + 10)).forEach(function (m) {
+        m = Math.round(m * 100) / 100;
+        if (out.length < 4 && m > 0 && out.indexOf(m) < 0) out.push(m);
+      });
+      while (out.length < 4) out.push(ans + out.length * 7);
+      return out.map(function (x) { return withUnit(x, u); });
+    }
+    function physics(id, items) { var g = listGen(id, 'science', items); g.sub = 'physics'; return g; }
+    function chemistry(id, items) { var g = listGen(id, 'science', items); g.sub = 'chemistry'; return g; }
+    function combo(id, sub, count, sample) { var g = comboGen(id, 'science', count, sample); g.sub = sub; return g; }
+    function each(a, b, f) { var out = []; a.forEach(function (x) { b.forEach(function (y) { var it = f(x, y); if (it) out.push(it); }); }); return out; }
+    function q4(id, qpt, qen, ans, mistakes, u) {
+      return { id: id, level: 4, make: function (rand) { return build('', 'science', T(qpt, qen), numOpts(rand, ans, mistakes, u), rand); } };
+    }
+    var range = function (a, b, step) { var r = []; for (var x = a; x <= b; x += step || 1) r.push(x); return r; };
+
+    // ---------------------------------------------------------- physics
+    var P = [];
+    P = P.concat(each(range(10, 120, 10), range(1, 5), function (v, t) {
+      var d = v * t;
+      return q4('vkm-' + v + '-' + t, 'Um carro percorre ' + d + ' km em ' + t + ' h. Qual é a sua velocidade média?',
+        'A car travels ' + d + ' km in ' + t + ' h. What is its average speed?', v, [d * t, d + t, v + 10], 'km/h');
+    }));
+    P = P.concat(each(range(2, 15), [5, 10, 20, 50], function (v, t) {
+      var d = v * t;
+      return q4('vms-' + v + '-' + t, 'Um corpo percorre ' + d + ' m em ' + t + ' s. Qual é a sua velocidade média?',
+        'A body travels ' + d + ' m in ' + t + ' s. What is its average speed?', v, [d * t, d - t, v * 10], 'm/s');
+    }));
+    P = P.concat(each([2, 5, 10, 20, 50], range(1, 10), function (m, a) {
+      return q4('fma-' + m + '-' + a, 'Que força resultante dá a um corpo de ' + m + ' kg uma aceleração de ' + a + ' m/s²?',
+        'What net force gives a ' + m + ' kg body an acceleration of ' + a + ' m/s²?', m * a, [m + a, m * a * 10, m / a], 'N');
+    }));
+    P = P.concat(range(1, 60).map(function (m) {
+      return q4('w-' + m, 'Qual é o peso de um corpo de ' + m + ' kg na Terra? (g = 10 N/kg)',
+        'What is the weight of a ' + m + ' kg body on Earth? (g = 10 N/kg)', m * 10, [m, m * 100, m + 10], 'N');
+    }));
+    P = P.concat(each([1, 2, 3, 7, 8, 11], [2, 5, 10, 20], function (rho, V) {
+      var m = rho * V;
+      return q4('rho-' + rho + '-' + V, 'Um objeto tem ' + m + ' g de massa e ' + V + ' cm³ de volume. Qual é a sua massa volúmica?',
+        'An object has a mass of ' + m + ' g and a volume of ' + V + ' cm³. What is its density?', rho, [m * V, m + V, rho * 10], 'g/cm³');
+    }));
+    P = P.concat(each([2, 5, 10, 20, 50, 100], [1, 2, 3, 4, 5], function (R, I) {
+      return q4('ohm-' + R + '-' + I, 'Uma resistência de ' + R + ' Ω é percorrida por uma corrente de ' + I + ' A. Qual é a tensão aos seus terminais?',
+        'A current of ' + I + ' A flows through a ' + R + ' Ω resistor. What is the voltage across it?', R * I, [R + I, R / I, R * I * 10], 'V');
+    }));
+    P = P.concat(each([2, 5, 10, 20, 50, 100], [1, 2, 3, 4, 5], function (R, I) {
+      var V = R * I;
+      return q4('ohmi-' + R + '-' + I, 'Aplica-se uma tensão de ' + V + ' V a uma resistência de ' + R + ' Ω. Qual é a corrente?',
+        'A voltage of ' + V + ' V is applied across a ' + R + ' Ω resistor. What is the current?', I, [V * R, V - R > 0 ? V - R : I + 2, I * 10], 'A');
+    }));
+    P = P.concat(each([6, 12, 230], range(1, 10), function (V, I) {
+      return q4('pvi-' + V + '-' + I, 'Um aparelho ligado a ' + V + ' V é percorrido por ' + I + ' A. Qual é a sua potência?',
+        'A device on ' + V + ' V draws ' + I + ' A. What is its power?', V * I, [V + I, V / I, V * I * 2], 'W');
+    }));
+    P = P.concat(each([2, 4, 6, 10, 20], range(1, 10), function (m, v) {
+      return q4('ec-' + m + '-' + v, 'Qual é a energia cinética de um corpo de ' + m + ' kg a ' + v + ' m/s?',
+        'What is the kinetic energy of a ' + m + ' kg body moving at ' + v + ' m/s?', m * v * v / 2, [m * v * v, m * v / 2, m * v], 'J');
+    }));
+    P = P.concat(each([1, 2, 5, 10], [1, 2, 5, 10, 20, 50], function (m, h) {
+      return q4('ep-' + m + '-' + h, 'Qual é a energia potencial gravítica de um corpo de ' + m + ' kg a ' + h + ' m de altura? (g = 10 N/kg)',
+        'What is the gravitational potential energy of a ' + m + ' kg body ' + h + ' m high? (g = 10 N/kg)', m * 10 * h, [m * h, m * 10 + h, m * h * 100], 'J');
+    }));
+    P = P.concat(each([100, 200, 500, 1000, 2000], [1, 2, 4, 5, 10], function (F, A) {
+      return q4('p-' + F + '-' + A, 'Uma força de ' + F + ' N atua numa área de ' + A + ' m². Qual é a pressão?',
+        'A force of ' + F + ' N acts on an area of ' + A + ' m². What is the pressure?', F / A, [F * A, F - A, F / A * 10], 'Pa');
+    }));
+    P = P.concat(each([2, 5, 10, 50, 100], [1, 2, 3, 4, 5], function (f, l) {
+      return q4('wave-' + f + '-' + l, 'Uma onda tem frequência ' + f + ' Hz e comprimento de onda ' + l + ' m. Qual é a sua velocidade?',
+        'A wave has a frequency of ' + f + ' Hz and a wavelength of ' + l + ' m. What is its speed?', f * l, [f + l, f / l, f * l * 10], 'm/s');
+    }));
+    P = P.concat(each([5, 10, 20, 50], [2, 3, 5, 10], function (F, d) {
+      return q4('work-' + F + '-' + d, 'Uma força de ' + F + ' N desloca um corpo ' + d + ' m na sua direção. Que trabalho realiza?',
+        'A ' + F + ' N force moves a body ' + d + ' m in its direction. How much work does it do?', F * d, [F + d, F / d, F * d * 10], 'J');
+    }));
+    P = P.concat(each([10, 20, 30, 40, 60], [2, 5, 10], function (dv, dt) {
+      if (dv % dt) return null;
+      return q4('acc-' + dv + '-' + dt, 'Um carro passa de 0 a ' + dv + ' m/s em ' + dt + ' s. Qual é a aceleração média?',
+        'A car goes from 0 to ' + dv + ' m/s in ' + dt + ' s. What is its average acceleration?', dv / dt, [dv * dt, dv - dt, dv / dt * 10], 'm/s²');
+    }));
+    P = P.concat(each([1, 2, 3], range(1, 5), function (kw, h) {
+      return q4('kwh-' + kw + '-' + h, 'Um aquecedor de ' + kw + ' kW está ligado ' + h + ' h. Quanta energia gasta?',
+        'A ' + kw + ' kW heater is on for ' + h + ' h. How much energy does it use?', kw * h, [kw + h, kw * h * 1000, kw * h * 60], 'kWh');
+    }));
+    function factItems(rows, prefix) {
+      return rows.map(function (r, i) {
+        function bi(x) { var p = x.split('~'); return T(p[0], p[1]); }
+        return { id: prefix + i, level: 4, make: function (rand) { return build('', 'science', T(r[0], r[1]), r.slice(2, 6).map(bi), rand); } };
+      });
+    }
+    P = P.concat(factItems(F.PHYSICS_FACTS, 'pf-'));
+    GENS.push(physics('phys', P));
+
+    var CD = F.CONDUCTORS.map(function (r, i) { return { i: i, pt: r[0], en: r[1], c: r[2] === '1' }; });
+    var nC = CD.filter(function (x) { return x.c; }).length, nI = CD.length - nC;
+    GENS.push(combo('phys-cond', 'physics', nC * choose(nI, 3) + nI * choose(nC, 3), function (rand) {
+      var want = rand() < 0.5;
+      var right = pick(rand, CD.filter(function (x) { return x.c === want; }));
+      var others = shuffle(CD.filter(function (x) { return x.c !== want; }), rand).slice(0, 3);
+      return {
+        key: (want ? 'c' : 'i') + right.i + '.' + others.map(function (x) { return x.i; }).sort().join('.'),
+        level: 4,
+        q: build('', 'science', want
+          ? T('Qual destes materiais é um bom condutor elétrico?', 'Which of these materials is a good electrical conductor?')
+          : T('Qual destes materiais é um isolador elétrico?', 'Which of these materials is an electrical insulator?'),
+          [T(right.pt, right.en)].concat(others.map(function (x) { return T(x.pt, x.en); })), rand)
+      };
+    }));
+
+    // -------------------------------------------------------- chemistry
+    var EL = {};
+    F.ELEMENTS.forEach(function (r) { EL[r[1]] = { z: +r[0], pt: r[2], en: r[3] }; });
+    var CP = F.COMPOUNDS.map(function (r, i) {
+      var comp = r[3].split(',').map(function (p) { var kv = p.split(':'); return [kv[0], +kv[1]]; });
+      return { i: i, pt: r[0], en: r[1], f: r[2], comp: comp };
+    });
+    var C = [];
+    CP.forEach(function (c) {
+      C.push({ id: 'fname-' + c.i, level: 4, make: function (rand) {
+        return ask('', 'science', T('Que substância tem a fórmula química ' + c.f + '?', 'Which substance has the chemical formula ' + c.f + '?'),
+          T(c.pt, c.en), CP.map(function (o) { return T(o.pt, o.en); }), rand);
+      } });
+      C.push({ id: 'ff-' + c.i, level: 4, make: function (rand) {
+        return ask('', 'science', T('Qual é a fórmula química de: ' + c.pt + '?', 'What is the chemical formula of ' + c.en + '?'),
+          c.f, CP.map(function (o) { return o.f; }), rand);
+      } });
+      var atoms = c.comp.reduce(function (a, kv) { return a + kv[1]; }, 0);
+      C.push(q4('atoms-' + c.i, 'Quantos átomos tem uma unidade de ' + c.f + '?', 'How many atoms are there in one unit of ' + c.f + '?',
+        atoms, [c.comp.length, atoms + 1, atoms * 2], 'átomos'));
+      var M = c.comp.reduce(function (a, kv) { return a + F.ATOMIC_MASS[kv[0]] * kv[1]; }, 0);
+      var plainSum = c.comp.reduce(function (a, kv) { return a + F.ATOMIC_MASS[kv[0]]; }, 0);
+      var given = c.comp.map(function (kv) { return kv[0] + ' = ' + String(F.ATOMIC_MASS[kv[0]]).replace('.', ','); }).join('; ');
+      var givenEn = c.comp.map(function (kv) { return kv[0] + ' = ' + F.ATOMIC_MASS[kv[0]]; }).join('; ');
+      C.push(q4('mm-' + c.i, 'Qual é a massa molar de ' + c.f + '? (' + given + ' g/mol)', 'What is the molar mass of ' + c.f + '? (' + givenEn + ' g/mol)',
+        M, [plainSum, M + 2, M * 2], 'g/mol'));
+    });
+    // Atoms, isotopes and ions
+    function sup(n) { return String(n).split('').map(function (d) { return '⁰¹²³⁴⁵⁶⁷⁸⁹'[+d]; }).join(''); }
+    F.ISOTOPES.forEach(function (r) {
+      var e = EL[r[0]], A = +r[1], name = e.pt.toLowerCase() + '-' + A, nameEn = e.en.toLowerCase() + '-' + A;
+      var label = name + ' (' + sup(A) + r[0] + ')', labelEn = nameEn + ' (' + sup(A) + r[0] + ')';
+      C.push(q4('n-' + r[0] + A, 'Quantos neutrões tem o ' + label + '?', 'How many neutrons does ' + labelEn + ' have?', A - e.z, [A, e.z, A + e.z], ''));
+      C.push(q4('p-' + r[0] + A, 'Quantos protões tem o ' + label + '?', 'How many protons does ' + labelEn + ' have?', e.z, [A, A - e.z, e.z + 1], ''));
+    });
+    F.IONS.forEach(function (r) {
+      var e = EL[r[0]], q = +r[1];
+      var ion = r[0] + (Math.abs(q) > 1 ? sup(Math.abs(q)) : '') + (q > 0 ? '⁺' : '⁻');
+      C.push(q4('ion-' + r[0], 'Quantos eletrões tem o ião ' + ion + '?', 'How many electrons does the ' + ion + ' ion have?', e.z - q, [e.z, e.z + q, e.z - 2 * q], ''));
+    });
+    // Electron configuration and valence electrons, Z = 1–20
+    function shells(z) { var caps = [2, 8, 8, 2], out = []; for (var k = 0; k < caps.length && z > 0; k++) { out.push(Math.min(z, caps[k])); z -= caps[k]; } return out; }
+    Object.keys(EL).forEach(function (sym) {
+      var e = EL[sym];
+      if (e.z > 20) return;
+      var sh = shells(e.z), conf = sh.join('-');
+      C.push({ id: 'conf-' + sym, level: 4, make: function (rand) {
+        var wrong = [shells(e.z + 1).join('-'), shells(Math.max(1, e.z - 1)).join('-'), sh.slice().reverse().join('-'), sh.concat([1]).join('-'), [2].concat(sh).join('-'), sh.concat([8]).join('-')];
+        return ask('', 'science', T('Qual é a distribuição eletrónica do ' + e.pt.toLowerCase() + ' (Z = ' + e.z + ')?', 'What is the electron arrangement of ' + e.en.toLowerCase() + ' (Z = ' + e.z + ')?'),
+          conf, wrong, rand);
+      } });
+      C.push(q4('val-' + sym, 'Quantos eletrões de valência tem o ' + e.pt.toLowerCase() + ' (Z = ' + e.z + ')?', 'How many valence electrons does ' + e.en.toLowerCase() + ' (Z = ' + e.z + ') have?',
+        sh[sh.length - 1], [e.z, sh.length, 8 - sh[sh.length - 1] || 2], ''));
+    });
+    // Separation techniques
+    var SEP = F.SEPARATION;
+    SEP.forEach(function (r, i) {
+      C.push({ id: 'sep-' + i, level: 4, make: function (rand) {
+        return ask('', 'science', T('Que técnica separa: ' + r[0] + '?', 'Which technique separates ' + r[1] + '?'), T(r[2], r[3]), SEP.map(function (x) { return T(x[2], x[3]); }), rand);
+      } });
+    });
+    C = C.concat(factItems(F.CHEMISTRY_FACTS, 'cf-'));
+    // Numeric answers that are plain counts need no unit.
+    C.forEach(function (it) { var mk = it.make; it.make = function (rand) { var q = mk(rand); if (q) q.options.forEach(function (o) { o.pt = o.pt.replace(/ $/, '').replace(/ átomos$/, ''); o.en = o.en.replace(/ $/, '').replace(/ átomos$/, ''); }); return q; }; });
+    GENS.push(chemistry('chem', C));
+
+    // Acids and bases, physical and chemical changes
+    var PH = F.PH_SUBSTANCES.map(function (r, i) { return { i: i, pt: r[0], en: r[1], k: r[2] }; });
+    GENS.push(combo('chem-ph', 'chemistry', 5 * choose(7, 3) + 6 * choose(6, 3), function (rand) {
+      var k = rand() < 0.5 ? 'acid' : 'base';
+      var right = pick(rand, PH.filter(function (x) { return x.k === k; }));
+      var others = shuffle(PH.filter(function (x) { return x.k !== k; }), rand).slice(0, 3);
+      return {
+        key: k + right.i + '.' + others.map(function (x) { return x.i; }).sort().join('.'),
+        level: 4,
+        q: build('', 'science', T('Qual destas substâncias é ' + F.PH_NAMES[k].apt + '?', 'Which of these substances is ' + F.PH_NAMES[k].aen + '?'),
+          [T(right.pt, right.en)].concat(others.map(function (x) { return T(x.pt, x.en); })), rand)
+      };
+    }));
+    GENS.push(combo('chem-phval', 'chemistry', 7 * 8 * 7 * 6 / 6 * 2, function (rand) {
+      var acid = rand() < 0.5;
+      var right = acid ? rnd(rand, 0, 6) : rnd(rand, 8, 14);
+      var pool = shuffle(range(0, 14).filter(function (x) { return acid ? x >= 7 : x <= 7; }), rand).slice(0, 3);
+      return {
+        key: (acid ? 'a' : 'b') + right + '.' + pool.slice().sort(function (a, b) { return a - b; }).join('.'),
+        level: 4,
+        q: build('', 'science', acid
+          ? T('Qual destes valores de pH corresponde a uma solução ácida?', 'Which of these pH values is an acidic solution?')
+          : T('Qual destes valores de pH corresponde a uma solução básica?', 'Which of these pH values is a basic solution?'),
+          [right].concat(pool).map(function (x) { return both('pH ' + x); }), rand)
+      };
+    }));
+    var CH = F.CHANGES.map(function (r, i) { return { i: i, pt: r[0], en: r[1], chem: r[2] === 'chemical' }; });
+    function capi(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+    GENS.push(combo('chem-change', 'chemistry', 9 * choose(9, 3) * 2, function (rand) {
+      var chem = rand() < 0.5;
+      var right = pick(rand, CH.filter(function (x) { return x.chem === chem; }));
+      var others = shuffle(CH.filter(function (x) { return x.chem !== chem; }), rand).slice(0, 3);
+      return {
+        key: (chem ? 'c' : 'f') + right.i + '.' + others.map(function (x) { return x.i; }).sort().join('.'),
+        level: 4,
+        q: build('', 'science', chem
+          ? T('Qual destas é uma transformação química?', 'Which of these is a chemical change?')
+          : T('Qual destas é uma transformação física?', 'Which of these is a physical change?'),
+          [T(capi(right.pt), capi(right.en))].concat(others.map(function (x) { return T(capi(x.pt), capi(x.en)); })), rand)
+      };
+    }));
+  })();
+
   // --------------------------------------------------------------- picking
   var BY_TOPIC = {};
   GENS.forEach(function (g) { (BY_TOPIC[g.topic] = BY_TOPIC[g.topic] || []).push(g); });
@@ -928,14 +1154,24 @@
    * dropped and another one is tried.
    */
   var MAX_WEIGHT = 45;
+  // Share of Genius-level Science questions drawn from physics and chemistry.
+  var GENIUS_SCIENCE = 0.8;
   function make(topic, level, rand) {
-    var gens = (BY_TOPIC[topic] || []).slice();
+    var all = BY_TOPIC[topic] || [];
+    if (topic === 'science' && level === 4 && rand() < GENIUS_SCIENCE) {
+      var q0 = pickFrom(all.filter(function (g) { return g.sub; }), level, rand);
+      if (q0) return q0;
+    }
+    return pickFrom(all, level, rand);
+  }
+  function pickFrom(list, level, rand) {
+    var gens = list.slice();
     while (gens.length) {
       var weights = gens.map(function (g) { return Math.min(MAX_WEIGHT, Math.sqrt(g.count)); });
       var r = rand() * weights.reduce(function (a, b) { return a + b; }, 0), k = 0;
       while (k < gens.length - 1 && r > weights[k]) { r -= weights[k]; k++; }
       var q = gens[k].make(rand, level);
-      if (q) return q;
+      if (q) { if (gens[k].sub) q.sub = gens[k].sub; return q; }
       gens.splice(k, 1);
     }
     return null;

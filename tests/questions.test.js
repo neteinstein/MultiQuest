@@ -185,3 +185,29 @@ test('the dealer never repeats a question in a long game', () => {
     }
   });
 });
+
+test('genius Science is mostly physics and chemistry, with exact answers', () => {
+  let sub = 0;
+  for (let i = 0; i < 400; i++) if (G.make('science', 4, Math.random).sub) sub++;
+  assert.ok(sub > 250, 'physics/chemistry share: ' + sub + '/400');
+  for (let l = 1; l <= 3; l++) for (let i = 0; i < 100; i++) assert.ok(!G.make('science', l, Math.random).sub, 'physics/chemistry below Genius');
+  const known = { 'H₂O': 18, 'CO₂': 44, 'NaCl': 58.5, 'C₆H₁₂O₆': 180, 'H₂SO₄': 98, 'CaCO₃': 100, 'NaOH': 40, 'NH₃': 17 };
+  const seen = new Set();
+  sample('chem', 3000).forEach((q) => {
+    let m = q.q.en.match(/^What is the molar mass of (\S+)\?/);
+    if (m && known[m[1]]) { assert.equal(right(q, 'en'), known[m[1]] + ' g/mol', m[1]); seen.add(m[1]); }
+    m = q.q.en.match(/^How many neutrons does carbon-14/);
+    if (m) assert.equal(right(q, 'en'), '8');
+    m = q.q.en.match(/^How many electrons does the (\S+) ion/);
+    if (m) assert.equal(right(q, 'en'), { 'Na⁺': '10', 'Cl⁻': '18', 'O²⁻': '10', 'Al³⁺': '10', 'Ca²⁺': '18' }[m[1]] || right(q, 'en'));
+    m = q.q.en.match(/^What is the electron arrangement of sodium/);
+    if (m) assert.equal(right(q, 'en'), '2-8-1');
+  });
+  assert.ok(seen.size >= 4, 'molar masses checked: ' + [...seen].join(', '));
+  sample('phys', 2000).forEach((q) => {
+    let m = q.q.en.match(/^What is the kinetic energy of a (\d+) kg body moving at (\d+) m\/s\?/);
+    if (m) assert.equal(right(q, 'en'), (m[1] * m[2] * m[2]) / 2 + ' J');
+    m = q.q.en.match(/^A current of (\d+) A flows through a (\d+) Ω resistor/);
+    if (m) assert.equal(right(q, 'en'), m[1] * m[2] + ' V');
+  });
+});

@@ -22,7 +22,7 @@ Abra o link no browser do telemóvel e escolha **Instalar app** (Android/Chrome)
 - Cada casa tem um tema aleatório: **Matemática, História de Portugal, Ciências, Português, Inglês**.
   A pergunta é sempre diferente (não se repete durante o jogo). 4 opções, só 1 certa.
   - Acertou → fica na casa e joga outra vez (até 3 vezes seguidas); cada pergunta extra é um nível mais difícil e tem menos 5 segundos (30, 25, 20, 15). Errou → volta para onde estava e passa a vez.
-- Cada jogador escolhe a sua dificuldade: **Fácil, Médio, Difícil ou Génio**. As perguntas (e a matemática) seguem esse nível.
+- Cada jogador escolhe a sua dificuldade: **Fácil, Médio, Difícil ou Génio**. As perguntas (e a matemática) seguem esse nível. No nível Génio, as casas de Ciências trazem sobretudo **Física e Química** (cálculos de velocidade, força, energia, lei de Ohm, massas molares, protões e neutrões, pH, transformações físicas e químicas…).
 - Para ganhar é preciso chegar **exatamente** à casa 75 e acertar a pergunta. Se o dado passar da 75, recua o excesso a partir da 75.
 - Se um jogador chegar a uma casa onde já está outro, **quem lá estava primeiro vai para a casa 25**.
 
