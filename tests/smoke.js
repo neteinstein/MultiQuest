@@ -81,7 +81,7 @@ async function checkFits(page, label) {
         duel: s.duel && { step: s.duel.step, correct: s.duel.q.correct },
         steal: !!s.stealOffer,
         powersOpen: !document.getElementById('powerOverlay').classList.contains('hidden'),
-        canPower: !document.getElementById('powerBtn').disabled
+        canPower: !document.getElementById('powerBtn').disabled && !s.powerUsed && s.players[s.current].energy > 0
       };
     });
     if (st.winner) break;

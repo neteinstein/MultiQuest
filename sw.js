@@ -1,7 +1,7 @@
 // Service worker: makes MultiQuest installable and playable offline.
 // Network first, so a new deploy shows up right away; the cache is the
 // fallback when there is no connection.
-const CACHE = 'multiquest-v1';
+const CACHE = 'multiquest-v2';
 const CORE = [
   './',
   'index.html',
@@ -33,8 +33,12 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
+  // Pages are revalidated with the server every time: the HTML names the
+  // versioned scripts, so a stale copy from the HTTP cache would keep an old
+  // game running for up to 10 minutes after a deploy.
+  const isPage = req.mode === 'navigate' || req.destination === 'document';
   event.respondWith(
-    fetch(req)
+    fetch(req, isPage ? { cache: 'no-cache' } : undefined)
       .then((res) => {
         if (res.ok) {
           // Store under the URL without ?v= so offline lookups find it.

@@ -604,9 +604,13 @@
     $('rollBtn').disabled = !can;
     $('rollBtn').classList.toggle('pulse', !!can);
     var pw = $('powerBtn');
-    var canPower = can && !state.powerUsed && cur().energy > 0;
-    pw.disabled = !canPower;
-    pw.classList.toggle('ready', !!canPower);
+    // Always open in your turn, so players can see what the powers do; it glows
+    // when one of them can actually be used.
+    var p = cur();
+    pw.disabled = !can;
+    pw.classList.toggle('ready', !!(can && !state.powerUsed && R.POWER_ORDER.some(function (n) { return !powerInfo(n, p).why; })));
+    $('powerCount').textContent = p.energy;
+    pw.setAttribute('aria-label', t('powers') + ' (⚡ ' + p.energy + ')');
   }
 
   // ------------------------------------------------------------- turn flow
@@ -699,6 +703,10 @@
     if (ok) {
       p.energy = R.gainEnergy(p.energy);
       renderEnergy();
+      if (!state.powerHinted) {
+        state.powerHinted = true;
+        log('msg_powerHint', { name: nameOf(p) }, { toast: true, kind: 'magic' });
+      }
       burstAt($('turnEnergy'), ['#ffd54f', '#fff59d', '#ffffff'], 12, 50);
       log('msg_correct', { name: nameOf(p), n: p.pos }, { kind: 'good' });
       if (p.pos === R.BOARD_SIZE) return win(p);
@@ -973,7 +981,7 @@
   }
 
   function openPowers() {
-    if (!state || state.phase !== 'roll' || state.powerUsed) return;
+    if (!state || state.phase !== 'roll') return;
     state.powerView = null;
     renderPowers();
     $('powerOverlay').classList.remove('hidden');
