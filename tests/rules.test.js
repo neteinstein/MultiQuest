@@ -149,3 +149,52 @@ test('a right answer earns another roll, up to 3 in a row', () => {
   assert.equal(R.earnsBonusRoll(2), true);
   assert.equal(R.earnsBonusRoll(3), false);
 });
+
+test('energy is banked up to 3', () => {
+  assert.equal(R.gainEnergy(0), 1);
+  assert.equal(R.gainEnergy(3), 3);
+});
+
+const P = (...pos) => pos.map((p, i) => ({ pos: p, level: 2, idx: i }));
+
+test('duels reach players within 6 squares, either way', () => {
+  assert.deepEqual(R.duelTargets(P(10, 16, 4, 17, 3), 0), [1, 2]);
+});
+
+test('nobody can be frozen twice in a row', () => {
+  assert.deepEqual(R.freezeTargets(P(1, 2, 3), 0, null), [1, 2]);
+  assert.deepEqual(R.freezeTargets(P(1, 2, 3), 0, 2), [1]);
+});
+
+test('hard question skips genius players and ones already cursed', () => {
+  const ps = P(1, 2, 3, 4);
+  ps[1].level = 4;
+  ps[2].hardNext = true;
+  assert.deepEqual(R.hardTargets(ps, 0), [3]);
+});
+
+test('swap targets the closest player ahead', () => {
+  assert.equal(R.swapTarget(P(10, 30, 14, 9), 0), 2);
+  assert.equal(R.swapTarget(P(40, 30, 14), 0), null);
+  assert.equal(R.swapTarget(P(10, 10), 0), null);
+});
+
+test('traps only go on free question houses', () => {
+  assert.equal(R.canPlaceTrap(5, {}), true);
+  assert.equal(R.canPlaceTrap(0, {}), false);
+  assert.equal(R.canPlaceTrap(75, {}), false);
+  assert.equal(R.canPlaceTrap(27, {}), false);
+  assert.equal(R.canPlaceTrap(5, { 5: { owner: 1 } }), false);
+});
+
+test('duel winner: right beats wrong, then the faster answer', () => {
+  assert.equal(R.duelWinner({ correct: true, ms: 9000 }, { correct: false, ms: 1000 }), 'a');
+  assert.equal(R.duelWinner({ correct: false, ms: 1 }, { correct: true, ms: 9 }), 'b');
+  assert.equal(R.duelWinner({ correct: true, ms: 3000 }, { correct: true, ms: 2000 }), 'b');
+  assert.equal(R.duelWinner({ correct: false, ms: 1 }, { correct: false, ms: 2 }), null);
+});
+
+test('a steal moves forward what the wrong answer lost', () => {
+  assert.equal(R.stealGain(14, 9), 5);
+  assert.equal(R.stealGain(73, 73), 0);
+});

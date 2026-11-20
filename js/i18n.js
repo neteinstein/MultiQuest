@@ -16,6 +16,61 @@
       color: 'Cor',
       colorTaken: 'Esta cor já foi escolhida',
       start: 'Começar o jogo',
+      powers: 'Poderes',
+      msg_timeout: 'O tempo acabou!',
+      timeLeft: 'Tempo restante',
+      powersTitle: 'Poderes de {name}',
+      powersHint: 'Cada resposta certa dá 1 ⚡ (máx. 3). Usa um poder por vez, antes de lançar o dado.',
+      power_duel: 'Duelo',
+      power_freeze: 'Congelar',
+      power_swap: 'Troca',
+      power_hard: 'Pergunta difícil',
+      power_shield: 'Escudo',
+      power_trap: 'Armadilha',
+      power_steal: 'Roubar a pergunta',
+      desc_duel: 'Desafia um jogador até 6 casas de distância. A mesma pergunta para os dois: ganha a resposta certa mais rápida e quem perde recua 3 casas.',
+      desc_freeze: 'Um jogador fica uma vez sem jogar. Ninguém é congelado duas vezes seguidas.',
+      desc_swap: 'Troca de lugar com o jogador logo à tua frente.',
+      desc_hard: 'A próxima pergunta de um jogador é um nível mais difícil.',
+      desc_shield: 'Bloqueia o próximo ataque e protege-te de ir para a casa 25.',
+      desc_trap: 'Põe uma armadilha numa casa: quem lá cair responde a uma pergunta do tema que escolheres, um nível mais difícil.',
+      why_energy: 'Precisas de {n} ⚡',
+      why_noTarget: 'Ninguém ao alcance',
+      why_hasShield: 'Já tens escudo',
+      why_noneAhead: 'Ninguém à tua frente',
+      why_used: 'Já usaste um poder nesta vez',
+      pickTarget: 'Escolhe o alvo',
+      back: 'Voltar',
+      cancel: 'Cancelar',
+      pickTrapSquare: 'Toca numa casa para pôr a armadilha 🪤',
+      pickTrapTopic: 'Que tema terá a armadilha?',
+      shielded: 'Escudo',
+      frozen: 'Congelado',
+      cursed: 'Pergunta difícil',
+      msg_shieldUp: '{name} ergue um escudo 🛡️',
+      msg_shieldBlock: 'O escudo de {name} bloqueou o ataque! 🛡️',
+      msg_shieldSave: 'O escudo de {name} evitou a casa 25! 🛡️',
+      msg_freeze: '{name} congelou {target} ❄️: perde a próxima vez.',
+      msg_swap: '{name} trocou de lugar com {target} 🔄',
+      msg_hard: '{name} preparou uma pergunta difícil para {target} 🔥',
+      msg_hardNow: 'Pergunta difícil para {name}! 🔥',
+      msg_trapSet: '{name} pôs uma armadilha na casa {n} 🪤',
+      msg_trapSprung: '{name} caiu na armadilha de {owner}! 🪤',
+      msg_duel: '{name} desafiou {target} para um duelo ⚔️',
+      msg_duelWin: '{winner} ganhou o duelo! {loser} recua 3 casas.',
+      msg_duelDraw: 'Duelo empatado: ninguém recua.',
+      msg_steal: '{name} roubou a pergunta e avança {n} casas!',
+      msg_stealMiss: '{name} tentou roubar a pergunta, mas errou.',
+      stealTitle: 'Roubar a pergunta?',
+      stealText: '{loser} errou. {name}, gastas 1 ⚡ para responder? Se acertares, avanças {n} casas.',
+      stealYes: 'Roubar (1 ⚡)',
+      stealNo: 'Não',
+      duelTitle: 'Duelo!',
+      duelVs: '{name} desafia {target}',
+      duelPass: 'Passa o dispositivo a {name}. {other}, não espreites!',
+      duelReady: 'Sou {name}: estou pronto',
+      duelResult: 'Resultado do duelo',
+      duelNoAnswer: 'sem resposta',
       nextPlayer: 'Seguinte',
       prevPlayer: 'Jogador anterior',
       goToPlayer: 'Ir para o jogador {n}',
@@ -96,6 +151,7 @@
         '<li>Na sua vez, cada jogador lança o dado (1–6) e avança esse número de casas.</li>' +
         '<li>Cada casa tem um tema: Matemática, História de Portugal, Ciências, Português ou Inglês. A pergunta é sempre diferente.</li>' +
         '<li>Há 4 opções e só 1 está certa. Acertou? Fica na casa e joga outra vez (até 3 vezes seguidas). Errou? Volta para onde estava e passa a vez.</li>' +
+        '<li>Tens 30 segundos para responder; se o tempo acabar, conta como errado.</li>' +
         '<li>Cada jogador escolhe a sua dificuldade (Fácil, Médio, Difícil ou Génio) e recebe perguntas desse nível.</li>' +
         '<li>Para ganhar é preciso chegar exatamente à casa 75 e acertar a pergunta. Se o dado passar da 75, recua o excesso a partir da 75.</li>' +
         '<li>Se chegar a uma casa onde já está outro jogador, quem lá estava primeiro vai para a casa 25.</li>' +
@@ -107,6 +163,17 @@
         '<li><b>27</b> — joga outra vez.</li>' +
         '<li><b>10</b> — fica 1 vez sem jogar.</li>' +
         '<li><b>7, 12 e 73</b> — teletransporte para a casa 21.</li>' +
+        '</ul>' +
+        '<h3>Poderes ⚡</h3>' +
+        '<p>Cada resposta certa dá 1 ⚡ de energia (guardas até 3). Na tua vez, antes de lançar o dado, podes usar um poder:</p>' +
+        '<ul>' +
+        '<li><b>⚔️ Duelo (1 ⚡)</b> — desafia um jogador até 6 casas de distância. Os dois respondem à mesma pergunta, à vez e sem espreitar (primeiro o desafiado). Ganha a resposta certa mais rápida; quem perde recua 3 casas.</li>' +
+        '<li><b>❄️ Congelar (1 ⚡)</b> — um jogador fica uma vez sem jogar. Ninguém é congelado duas vezes seguidas.</li>' +
+        '<li><b>🔄 Troca (2 ⚡)</b> — trocas de lugar com o jogador logo à tua frente.</li>' +
+        '<li><b>🔥 Pergunta difícil (1 ⚡)</b> — a próxima pergunta de um jogador é um nível acima.</li>' +
+        '<li><b>🛡️ Escudo (1 ⚡)</b> — bloqueia o próximo ataque e protege-te de ir para a casa 25.</li>' +
+        '<li><b>🪤 Armadilha (1 ⚡)</b> — escolhes uma casa e um tema. Quem lá cair a seguir responde a uma pergunta desse tema, um nível acima.</li>' +
+        '<li><b>🕵️ Roubar a pergunta (1 ⚡)</b> — quando alguém erra, o jogador seguinte pode responder à mesma pergunta. Se acertar, avança as casas que o outro perdeu.</li>' +
         '</ul>' +
         '<p>O tema do tabuleiro muda conforme o avatar de quem está a jogar.</p>' +
         '<p>Atalhos: Espaço ou Enter para lançar o dado, teclas 1–4 para responder.</p>'
@@ -124,6 +191,61 @@
       color: 'Colour',
       colorTaken: 'This colour is already taken',
       start: 'Start game',
+      powers: 'Powers',
+      msg_timeout: "Time's up!",
+      timeLeft: 'Time left',
+      powersTitle: "{name}'s powers",
+      powersHint: 'Every right answer earns 1 ⚡ (up to 3). Use one power per turn, before you roll.',
+      power_duel: 'Duel',
+      power_freeze: 'Freeze',
+      power_swap: 'Swap',
+      power_hard: 'Hard question',
+      power_shield: 'Shield',
+      power_trap: 'Trap',
+      power_steal: 'Steal the question',
+      desc_duel: 'Challenge a player within 6 squares. Same question for both: the fastest right answer wins and the loser goes back 3 squares.',
+      desc_freeze: 'A player misses their next turn. Nobody can be frozen twice in a row.',
+      desc_swap: 'Swap places with the player just ahead of you.',
+      desc_hard: "A player's next question is one level harder.",
+      desc_shield: 'Blocks the next attack and saves you from being sent to square 25.',
+      desc_trap: 'Set a trap on a square: whoever lands there next answers a question on the subject you pick, one level harder.',
+      why_energy: 'Needs {n} ⚡',
+      why_noTarget: 'Nobody in range',
+      why_hasShield: 'Already shielded',
+      why_noneAhead: 'Nobody ahead of you',
+      why_used: 'One power per turn',
+      pickTarget: 'Pick a target',
+      back: 'Back',
+      cancel: 'Cancel',
+      pickTrapSquare: 'Tap a square to set your trap 🪤',
+      pickTrapTopic: 'Which subject for the trap?',
+      shielded: 'Shield',
+      frozen: 'Frozen',
+      cursed: 'Hard question',
+      msg_shieldUp: '{name} raises a shield 🛡️',
+      msg_shieldBlock: "{name}'s shield blocked the attack! 🛡️",
+      msg_shieldSave: "{name}'s shield saved them from house 25! 🛡️",
+      msg_freeze: '{name} froze {target} ❄️: they miss their next turn.',
+      msg_swap: '{name} swapped places with {target} 🔄',
+      msg_hard: '{name} set up a hard question for {target} 🔥',
+      msg_hardNow: 'Hard question for {name}! 🔥',
+      msg_trapSet: '{name} set a trap on house {n} 🪤',
+      msg_trapSprung: "{name} fell into {owner}'s trap! 🪤",
+      msg_duel: '{name} challenged {target} to a duel ⚔️',
+      msg_duelWin: '{winner} won the duel! {loser} goes back 3 squares.',
+      msg_duelDraw: 'The duel is a draw: nobody moves.',
+      msg_steal: '{name} stole the question and moves {n} forward!',
+      msg_stealMiss: '{name} tried to steal the question but got it wrong.',
+      stealTitle: 'Steal the question?',
+      stealText: '{loser} got it wrong. {name}, spend 1 ⚡ to answer it? Get it right and you move {n} forward.',
+      stealYes: 'Steal (1 ⚡)',
+      stealNo: 'No thanks',
+      duelTitle: 'Duel!',
+      duelVs: '{name} challenges {target}',
+      duelPass: 'Pass the device to {name}. {other}, no peeking!',
+      duelReady: "I'm {name}: ready",
+      duelResult: 'Duel result',
+      duelNoAnswer: 'no answer',
       nextPlayer: 'Next',
       prevPlayer: 'Previous player',
       goToPlayer: 'Go to player {n}',
@@ -204,6 +326,7 @@
         '<li>On your turn, roll the die (1–6) and move that many houses forward.</li>' +
         '<li>Every house has a topic: Maths, Portuguese History, Science, Portuguese or English. The question is always a new one.</li>' +
         '<li>There are 4 options and only 1 is right. Right? You stay and roll again (up to 3 times in a row). Wrong? You go back to where you were and the next player plays.</li>' +
+        '<li>You have 30 seconds to answer; running out of time counts as wrong.</li>' +
         '<li>Each player picks their own difficulty (Easy, Medium, Hard or Genius) and gets questions at that level.</li>' +
         '<li>To win you must land exactly on house 75 and answer correctly. If the roll goes past 75 you move back the excess from 75.</li>' +
         '<li>If you land on a house where another player already is, the player who was there first goes to house 25.</li>' +
@@ -215,6 +338,17 @@
         '<li><b>27</b> — play again.</li>' +
         '<li><b>10</b> — miss 1 turn.</li>' +
         '<li><b>7, 12 and 73</b> — teleport to house 21.</li>' +
+        '</ul>' +
+        '<h3>Powers ⚡</h3>' +
+        '<p>Every right answer earns 1 ⚡ energy (you can bank up to 3). On your turn, before you roll, you can use one power:</p>' +
+        '<ul>' +
+        '<li><b>⚔️ Duel (1 ⚡)</b> — challenge a player within 6 squares. You both answer the same question in turn, without peeking (the challenged player first). The fastest right answer wins; the loser goes back 3 squares.</li>' +
+        '<li><b>❄️ Freeze (1 ⚡)</b> — a player misses their next turn. Nobody can be frozen twice in a row.</li>' +
+        '<li><b>🔄 Swap (2 ⚡)</b> — trade places with the player just ahead of you.</li>' +
+        '<li><b>🔥 Hard question (1 ⚡)</b> — a player\'s next question is one level harder.</li>' +
+        '<li><b>🛡️ Shield (1 ⚡)</b> — blocks the next attack and saves you from being sent to house 25.</li>' +
+        '<li><b>🪤 Trap (1 ⚡)</b> — pick a square and a subject. Whoever lands there next answers a question on that subject, one level harder.</li>' +
+        '<li><b>🕵️ Steal the question (1 ⚡)</b> — when someone answers wrong, the next player can answer the same question. Get it right and you move forward the squares they lost.</li>' +
         '</ul>' +
         '<p>The board theme changes to match the avatar of whoever is playing.</p>' +
         '<p>Shortcuts: Space or Enter to roll, keys 1–4 to answer.</p>'
