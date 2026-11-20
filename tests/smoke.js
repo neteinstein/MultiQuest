@@ -36,7 +36,24 @@ async function checkFits(page, label) {
     await page.close();
   }
 
-  // 2) Setup rules: colours must be unique.
+  // 2) Setup is a sideways carousel: it fits a phone screen and Next moves on one player.
+  for (const [w, h, label] of [[390, 844, 'phone'], [375, 667, 'small phone']]) {
+    const page = await browser.newPage({ viewport: { width: w, height: h }, reducedMotion: 'reduce' });
+    page.on('pageerror', (e) => errors.push(e.message));
+    await page.goto(URL);
+    await page.click('.count-btn[data-count="6"]');
+    const r = await page.evaluate(() => ({ sh: document.documentElement.scrollHeight, h: innerHeight, sw: document.documentElement.scrollWidth, w: innerWidth }));
+    r.sh <= r.h && r.sw <= r.w ? pass(label + ': player setup fits without scrolling the page') : fail(label + ': setup overflows ' + JSON.stringify(r));
+    const inView = () => page.$$eval('.player-row.in-view', (els) => els.map((e) => +e.dataset.slide));
+    await page.click('.dot[data-slide="0"]');
+    await page.click('#nextPlayer');
+    await page.waitForTimeout(100);
+    const v = await inView();
+    v.length === 1 && v[0] === 1 ? pass(label + ': Next shows the next player') : fail(label + ': after Next the cards in view are ' + v);
+    await page.close();
+  }
+
+  // 3) Setup rules: colours must be unique.
   const page = await browser.newPage({ viewport: { width: 1280, height: 800 }, reducedMotion: 'reduce' });
   page.on('pageerror', (e) => errors.push(e.message));
   page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
@@ -48,19 +65,20 @@ async function checkFits(page, label) {
   for (let i = 0; i < 4; i++) await page.click(`.diff-btn[data-player="${i}"][data-diff="${i + 1}"]`);
   await page.click('#startBtn');
 
-  // 3) Play until someone wins (or time runs out).
+  // 4) Play until someone wins (or time runs out).
   const levelMismatch = [];
-  let turns = 0, questions = 0, switched = false, drawerChecked = false;
+  let turns = 0, questions = 0, switched = false, drawerChecked = false, bonusOver = false;
   const start = Date.now();
   while (Date.now() - start < 300000) {
     const st = await page.evaluate(() => {
       const s = MQGame.state;
-      return { phase: s.phase, winner: !!s.winner, q: s.question && { answered: s.question.answered, correct: s.question.q.correct, level: s.question.q.level, plevel: s.question.p.level } };
+      return { phase: s.phase, winner: !!s.winner, q: s.question && { answered: s.question.answered, correct: s.question.q.correct, level: s.question.q.level, plevel: s.question.p.level, bonus: s.question.p.bonus } };
     });
     if (st.winner) break;
     if (st.q) {
       if (st.q.answered == null) {
         questions++;
+        if (st.q.bonus > 3) bonusOver = true;
         if (st.q.level !== st.q.plevel) levelMismatch.push(st.q);
         const pick = Math.random() < 0.9 ? st.q.correct : (st.q.correct + 1) % 4;
         await page.click(`[data-opt="${pick}"]`);
@@ -84,6 +102,7 @@ async function checkFits(page, label) {
   const winner = await page.evaluate(() => MQGame.state.winner && MQGame.state.winner.idx);
   winner != null ? pass(`game finished: player ${winner + 1} won after ${turns} turns, ${questions} questions`)
     : fail(`no winner after ${turns} turns`);
+  bonusOver ? fail('a player got more than 3 extra rolls in a row') : pass('extra rolls for right answers stay within 3 in a row');
   levelMismatch.length ? fail(levelMismatch.length + ' questions did not match the player level') : pass('every question matched the player difficulty');
   if (winner != null) {
     await page.waitForSelector('#winOverlay:not(.hidden)', { timeout: 5000 }).then(() => pass('winner screen shown'), () => fail('winner screen not shown'));

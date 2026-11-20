@@ -5,6 +5,8 @@
   var BOARD_SIZE = 75;
   var COLLISION_HOUSE = 25;
   var TELEPORT_HOUSE = 21;
+  // A right answer earns another roll, at most this many times in a row.
+  var MAX_BONUS_ROLLS = 3;
 
   // Special houses. These replace the question for that house.
   var SPECIAL = {
@@ -86,6 +88,11 @@
     return a;
   }
 
+  /** Whether a right answer earns another roll, given the bonus rolls already taken this turn. */
+  function earnsBonusRoll(bonusSoFar) {
+    return bonusSoFar < MAX_BONUS_ROLLS;
+  }
+
   function rollDie(rand) {
     rand = rand || Math.random;
     return 1 + Math.floor(rand() * 6);
@@ -95,6 +102,8 @@
     BOARD_SIZE: BOARD_SIZE,
     COLLISION_HOUSE: COLLISION_HOUSE,
     TELEPORT_HOUSE: TELEPORT_HOUSE,
+    MAX_BONUS_ROLLS: MAX_BONUS_ROLLS,
+    earnsBonusRoll: earnsBonusRoll,
     SPECIAL: SPECIAL,
     TOPICS: TOPICS,
     buildPath: buildPath,
