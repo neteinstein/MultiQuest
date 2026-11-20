@@ -8,10 +8,16 @@
   var Q = window.MQQuestions;
 
   var TOPIC_ICON = { math: '🧮', history: '🏰', science: '🔬', portuguese: '📖', english: '💬' };
+  // Genius-level Science questions can be physics or chemistry.
+  var SUB_ICON = { physics: '⚛️', chemistry: '🧪' };
+  function topicLabel(q) {
+    return q.sub ? SUB_ICON[q.sub] + ' ' + t('topic_' + q.sub) : TOPIC_ICON[q.topic] + ' ' + t('topic_' + q.topic);
+  }
   var SPECIAL_ICON = { advance: '⏩', again: '🎲', skip: '⏸️', teleport: '🌀' };
 
   var $ = function (id) { return document.getElementById(id); };
-  var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+  // Automated tests may set window.MQ_TEST_SPEED (e.g. 0.1) to shorten the pauses between moves.
+  var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms * (window.MQ_TEST_SPEED || 1)); }); };
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ------------------------------------------------------------------ i18n
@@ -831,7 +837,7 @@
     var badge = $('qTopic');
     badge.className = 'topic-badge topic-' + q.topic;
     document.querySelector('.question-modal').dataset.topic = q.topic;
-    badge.textContent = TOPIC_ICON[q.topic] + ' ' + t('topic_' + q.topic);
+    badge.textContent = topicLabel(q);
     $('qHouse').textContent = t('house', { n: s.p.pos });
     $('qDiff').className = 'diff-badge lvl-' + s.level;
     $('qDiff').textContent = t('diff_' + s.level);
@@ -1155,7 +1161,7 @@
         '<button type="button" class="primary big" id="duelReady">' + esc(t('duelReady', { name: nameOf(who) })) + '</button></div>';
     } else if (d.step === 'answer') {
       var p = d.order[d.turn];
-      html += '<div class="q-head"><span class="topic-badge topic-' + q.topic + '">' + TOPIC_ICON[q.topic] + ' ' + esc(t('topic_' + q.topic)) + '</span>' +
+      html += '<div class="q-head"><span class="topic-badge topic-' + q.topic + '">' + esc(topicLabel(q)) + '</span>' +
         '<span class="diff-badge lvl-' + d.level + '">' + esc(t('diff_' + d.level)) + '</span></div>' +
         '<div class="q-timer" id="dTimer"><span class="q-timer-bar"></span><b class="q-timer-num" id="dTimerNum"></b></div>' +
         '<div class="q-player">' + avatarHtml(p.avatar, p.color, 'mini idle') + '<span>' + esc(nm(p)) + '</span></div>' +

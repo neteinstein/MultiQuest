@@ -22,7 +22,7 @@ Abra o link no browser do telemóvel e escolha **Instalar app** (Android/Chrome)
 - Cada casa tem um tema aleatório: **Matemática, História de Portugal, Ciências, Português, Inglês**.
   A pergunta é sempre diferente (não se repete durante o jogo). 4 opções, só 1 certa.
   - Acertou → fica na casa e joga outra vez (até 3 vezes seguidas); cada pergunta extra é um nível mais difícil e tem menos 5 segundos (30, 25, 20, 15). Errou → volta para onde estava e passa a vez.
-- Cada jogador escolhe a sua dificuldade: **Fácil, Médio, Difícil ou Génio**. As perguntas (e a matemática) seguem esse nível.
+- Cada jogador escolhe a sua dificuldade: **Fácil, Médio, Difícil ou Génio**. As perguntas (e a matemática) seguem esse nível. No nível Génio, as casas de Ciências trazem sobretudo **Física e Química** (cálculos de velocidade, força, energia, lei de Ohm, massas molares, protões e neutrões, pH, transformações físicas e químicas…).
 - Para ganhar é preciso chegar **exatamente** à casa 75 e acertar a pergunta. Se o dado passar da 75, recua o excesso a partir da 75.
 - Se um jogador chegar a uma casa onde já está outro, **quem lá estava primeiro vai para a casa 25**.
 
@@ -63,10 +63,16 @@ O botão ☰ abre os jogadores, a legenda e o histórico.
 
 Atalhos: **Espaço** para lançar o dado, **1–4** para responder.
 
+## Perguntas
+
+Cerca de 7 000 perguntas sobre um único facto, mais as de "qual destes…" (que acontecimento foi primeiro, que palavra é um verbo, que animal é um mamífero), com milhões de combinações. A matemática é gerada sem limite. Contagem por tema: `node -e "console.log(require('./js/generators.js').counts())"`.
+
 ## Estrutura
 
 - `js/rules.js` — regras puras (movimento, ressalto na 75, casas especiais, colisões)
-- `js/questions.js` — perguntas bilingues + geradores (matemática por dificuldade, vocabulário, antónimos)
+- `js/facts.js` — tabelas de factos verificados (reis, presidentes, acontecimentos, elementos químicos, animais, corpo humano, verbos, plurais, vocabulário inglês, verbos irregulares…)
+- `js/generators.js` — transforma cada facto em vários tipos de pergunta, com as respostas erradas tiradas da mesma tabela
+- `js/questions.js` — perguntas escritas à mão, geradores de matemática por dificuldade e o distribuidor (nunca repete uma pergunta no mesmo jogo)
 - `js/avatars.js` — desenhos SVG, movimentos e temas
 - `js/game.js` — interface e fluxo de turnos
 - `manifest.webmanifest`, `sw.js`, `icons/` — app instalável (PWA) e modo offline

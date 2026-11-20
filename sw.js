@@ -1,7 +1,7 @@
 // Service worker: makes MultiQuest installable and playable offline.
 // Network first, so a new deploy shows up right away; the cache is the
 // fallback when there is no connection.
-const CACHE = 'multiquest-v2';
+const CACHE = 'multiquest-v3';
 const CORE = [
   './',
   'index.html',
@@ -10,6 +10,8 @@ const CORE = [
   'js/rules.js',
   'js/i18n.js',
   'js/avatars.js',
+  'js/facts.js',
+  'js/generators.js',
   'js/questions.js',
   'js/game.js',
   'icons/icon.svg',

@@ -104,6 +104,8 @@
       topic_math: 'Matemática',
       topic_history: 'História de Portugal',
       topic_science: 'Ciências',
+      topic_physics: 'Física',
+      topic_chemistry: 'Química',
       topic_portuguese: 'Português',
       topic_english: 'Inglês',
 
@@ -154,7 +156,7 @@
         '<li>Cada casa tem um tema: Matemática, História de Portugal, Ciências, Português ou Inglês. A pergunta é sempre diferente.</li>' +
         '<li>Há 4 opções e só 1 está certa. Acertou? Fica na casa e joga outra vez (até 3 vezes seguidas), mas cada pergunta extra é um nível mais difícil e tem menos 5 segundos. Errou? Volta para onde estava e passa a vez.</li>' +
         '<li>Tens 30 segundos para responder; se o tempo acabar, conta como errado.</li>' +
-        '<li>Cada jogador escolhe a sua dificuldade (Fácil, Médio, Difícil ou Génio) e recebe perguntas desse nível.</li>' +
+        '<li>Cada jogador escolhe a sua dificuldade (Fácil, Médio, Difícil ou Génio) e recebe perguntas desse nível. No nível Génio, as casas de Ciências trazem sobretudo perguntas de Física e Química.</li>' +
         '<li>Para ganhar é preciso chegar exatamente à casa 75 e acertar a pergunta. Se o dado passar da 75, recua o excesso a partir da 75.</li>' +
         '<li>Se chegar a uma casa onde já está outro jogador, quem lá estava primeiro vai para a casa 25.</li>' +
         '</ul>' +
@@ -281,6 +283,8 @@
       topic_math: 'Maths',
       topic_history: 'Portuguese History',
       topic_science: 'Science',
+      topic_physics: 'Physics',
+      topic_chemistry: 'Chemistry',
       topic_portuguese: 'Portuguese',
       topic_english: 'English',
 
@@ -331,7 +335,7 @@
         '<li>Every house has a topic: Maths, Portuguese History, Science, Portuguese or English. The question is always a new one.</li>' +
         '<li>There are 4 options and only 1 is right. Right? You stay and roll again (up to 3 times in a row), but each extra question is one level harder with 5 seconds less. Wrong? You go back to where you were and the next player plays.</li>' +
         '<li>You have 30 seconds to answer; running out of time counts as wrong.</li>' +
-        '<li>Each player picks their own difficulty (Easy, Medium, Hard or Genius) and gets questions at that level.</li>' +
+        '<li>Each player picks their own difficulty (Easy, Medium, Hard or Genius) and gets questions at that level. At Genius level, Science squares mostly ask Physics and Chemistry.</li>' +
         '<li>To win you must land exactly on house 75 and answer correctly. If the roll goes past 75 you move back the excess from 75.</li>' +
         '<li>If you land on a house where another player already is, the player who was there first goes to house 25.</li>' +
         '</ul>' +
