@@ -362,8 +362,7 @@ body.in-game main { flex: 1; min-height: 0; display: flex; flex-direction: colum
 .cell.special-again { --topic: #00b894; background: radial-gradient(circle at 50% 40%, #e0fff6, #7fe0c4); color: #003d2e; }
 .cell.portal { box-shadow: inset 0 0 0 3px var(--magic); }
 .cell.refuge::after {
-  content: "25"; position: absolute; inset: auto 3px 3px auto; font-size: 9px; font-weight: 800;
-  background: var(--bad); color: #fff; border-radius: 4px; padding: 0 3px; opacity: .8;
+  content: "🛟"; position: absolute; inset: auto 2px 2px auto; font-size: max(9px, calc(var(--cs, 56px) * .24)); line-height: 1;
 }
 .cell.finish { background: radial-gradient(circle at 50% 40%, #fff8d6, #ffcf40); box-shadow: inset 0 0 0 3px #e0a800, 0 0 18px #ffd54f; }
 .cell.trail { animation: trail .5s ease-out; }
@@ -1187,3 +1186,17 @@ body::after {
 }
 /* A soft pool of light on the table under the board. */
 .board-area { background: radial-gradient(60% 55% at 50% 50%, rgba(255,255,255,.12), transparent 70%); }
+
+/* Earthquake: the whole board shakes and the squares wobble. */
+.board-area.quaking { animation: quake 1s cubic-bezier(.36,.07,.19,.97); }
+.board-area.quaking .cell { animation: wobble .25s ease-in-out 4 alternate; }
+.board-area.quaking .cell:nth-child(3n) { animation-delay: .05s; }
+.board-area.quaking .cell:nth-child(3n+1) { animation-delay: .1s; animation-direction: alternate-reverse; }
+@keyframes quake {
+  0%, 100% { transform: translate(0, 0) rotate(0); }
+  10%, 50%, 90% { transform: translate(-9px, 3px) rotate(-1deg); }
+  30%, 70% { transform: translate(9px, -4px) rotate(1deg); }
+  20%, 60% { transform: translate(6px, 5px) rotate(.5deg); }
+  40%, 80% { transform: translate(-6px, -3px) rotate(-.5deg); }
+}
+@keyframes wobble { from { transform: translateY(0) rotate(0); } to { transform: translateY(-3px) rotate(2deg); } }
