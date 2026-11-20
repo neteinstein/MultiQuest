@@ -269,12 +269,15 @@
   var state = null;
 
   function newGame(players) {
+    var layout = R.makeLayout();
     state = {
       players: players.map(function (p, i) {
         return { idx: i, name: (p.name || '').trim(), avatar: p.avatar, color: p.color, level: p.level || 2, pos: 0, skip: 0, bonus: 0, energy: 0, shield: false, hardNext: false };
       }),
       current: 0,
-      topics: R.assignTopics(),
+      // A new board every game: special houses, portal destination and refuge move around.
+      layout: layout,
+      topics: R.assignTopics(Math.random, layout),
       dealer: new Q.Dealer(),
       log: [],
       phase: 'idle',
@@ -347,7 +350,7 @@
       var row = Math.floor(h / cols);
       var c = h % cols;
       var col = row % 2 === 0 ? c : cols - 1 - c;
-      var sp = R.specialAt(h);
+      var sp = R.specialAt(h, state.layout);
       var topic = state.topics[h];
       var cls = 'cell';
       var inner = '<span class="num">' + h + '</span>';
@@ -358,7 +361,7 @@
         title = t('start0');
       } else if (sp) {
         cls += ' special special-' + sp.type;
-        var label = sp.type === 'advance' ? t('special_advance', { n: sp.by }) : t('special_' + sp.type);
+        var label = sp.type === 'advance' ? t('special_advance', { n: sp.by }) : t('special_' + sp.type, { to: sp.to });
         inner += '<span class="icon">' + SPECIAL_ICON[sp.type] + '</span><span class="tag">' + esc(label) + '</span>';
         title = t('house', { n: h }) + ' — ' + label;
       } else {
@@ -367,14 +370,14 @@
         title = t('house', { n: h }) + ' — ' + t('topic_' + topic);
       }
       if (h === R.BOARD_SIZE) cls += ' finish';
-      if (h === R.COLLISION_HOUSE) cls += ' refuge';
-      if (h === R.TELEPORT_HOUSE) cls += ' portal';
+      if (h === state.layout.refuge) cls += ' refuge';
+      if (h === state.layout.teleport) cls += ' portal';
       var trap = state.traps[h];
       if (trap) {
         cls += ' trapped';
         inner += '<span class="trap-mark" style="--pc:' + state.players[trap.owner].color + '" title="' + esc(t('power_trap')) + '">🪤</span>';
       }
-      if (state.phase === 'trap' && R.canPlaceTrap(h, state.traps)) cls += ' trappable';
+      if (state.phase === 'trap' && R.canPlaceTrap(h, state.traps, state.layout)) cls += ' trappable';
       html += '<div class="' + cls + '" data-house="' + h + '" title="' + esc(title) + '" style="grid-row:' + (row + 1) + ';grid-column:' + (col + 1) + '">' + inner + '</div>';
     }
     board.innerHTML = html;
@@ -405,10 +408,14 @@
     R.TOPICS.forEach(function (tp) {
       html += '<li><span class="chip topic-' + tp + '">' + TOPIC_ICON[tp] + '</span>' + esc(t('topic_' + tp)) + '</li>';
     });
-    html += '<li><span class="chip special">' + SPECIAL_ICON.advance + '</span>13 → +2 · 55 → +1</li>';
-    html += '<li><span class="chip special">' + SPECIAL_ICON.again + '</span>27 — ' + esc(t('special_again')) + '</li>';
-    html += '<li><span class="chip special">' + SPECIAL_ICON.skip + '</span>10 — ' + esc(t('special_skip')) + '</li>';
-    html += '<li><span class="chip special">' + SPECIAL_ICON.teleport + '</span>7 · 12 · 73 → 21</li>';
+    // The special houses of this game's board.
+    var L = state.layout, by = { advance: [], again: [], skip: [], teleport: [] };
+    Object.keys(L.special).map(Number).sort(function (a, b) { return a - b; }).forEach(function (h) { by[L.special[h].type].push(h); });
+    html += '<li><span class="chip special">' + SPECIAL_ICON.advance + '</span>' + by.advance.map(function (h) { return h + ' → +' + L.special[h].by; }).join(' · ') + '</li>';
+    html += '<li><span class="chip special">' + SPECIAL_ICON.again + '</span>' + by.again.join(' · ') + ' — ' + esc(t('special_again')) + '</li>';
+    html += '<li><span class="chip special">' + SPECIAL_ICON.skip + '</span>' + by.skip.join(' · ') + ' — ' + esc(t('special_skip')) + '</li>';
+    html += '<li><span class="chip special">' + SPECIAL_ICON.teleport + '</span>' + by.teleport.join(' · ') + ' → ' + L.teleport + '</li>';
+    html += '<li><span class="chip">🛟</span>' + L.refuge + ' — ' + esc(t('refuge')) + '</li>';
     $('legend').innerHTML = html;
   }
 
@@ -705,7 +712,7 @@
   }
 
   async function resolveLanding(p, from) {
-    var sp = R.specialAt(p.pos);
+    var sp = R.specialAt(p.pos, state.layout);
     if (!sp) return ask(p, from);
 
     flashCell(p.pos, 'boom');
@@ -717,15 +724,15 @@
       return ask(p, from);
     }
     if (sp.type === 'teleport') {
-      log('msg_teleport', { house: p.pos }, { toast: true, kind: 'magic' });
+      log('msg_teleport', { house: p.pos, to: sp.to }, { toast: true, kind: 'magic' });
       await sleep(350);
       await teleport(p, sp.to);
     } else if (sp.type === 'again') {
-      log('msg_again', { name: nameOf(p) }, { toast: true, kind: 'good' });
+      log('msg_again', { name: nameOf(p), house: p.pos }, { toast: true, kind: 'good' });
       extra = true;
     } else if (sp.type === 'skip') {
       p.skip += sp.turns;
-      log('msg_skip', { name: nameOf(p) }, { toast: true, kind: 'warn' });
+      log('msg_skip', { name: nameOf(p), house: p.pos }, { toast: true, kind: 'warn' });
     }
     await settle(p);
     return endTurn(extra);
@@ -789,7 +796,7 @@
 
   // Whoever was on the house first is sent to house 25.
   async function settle(p) {
-    var victims = R.collisionVictims(state.players, p.idx);
+    var victims = R.collisionVictims(state.players, p.idx, state.layout);
     for (var i = 0; i < victims.length; i++) {
       var v = state.players[victims[i]];
       if (v.shield) {
@@ -798,10 +805,10 @@
         burstAt(tokenEl(v), ['#80d8ff', '#ffffff'], 14, 50);
         continue;
       }
-      log('msg_collision', { victim: nameOf(v), n: v.pos }, { toast: true, kind: 'bad' });
+      log('msg_collision', { victim: nameOf(v), n: v.pos, refuge: state.layout.refuge }, { toast: true, kind: 'bad' });
       flashCell(v.pos, 'boom');
-      await slideTo(v, R.COLLISION_HOUSE, 'knocked', 950);
-      flashCell(R.COLLISION_HOUSE);
+      await slideTo(v, state.layout.refuge, 'knocked', 950);
+      flashCell(state.layout.refuge);
     }
     renderPlayers();
   }
@@ -984,7 +991,7 @@
   }
 
   // ---------------------------------------------------------------- powers
-  var POWER_ICON = { duel: '⚔️', freeze: '❄️', swap: '🔄', hard: '🔥', shield: '🛡️', trap: '🪤', steal: '🕵️' };
+  var POWER_ICON = { duel: '⚔️', freeze: '❄️', swap: '🔄', hard: '🔥', shield: '🛡️', trap: '🪤', steal: '🕵️', quake: '🌋' };
 
   /** Who a power can hit right now, and why not when it can't. */
   function powerInfo(name, p) {
@@ -995,6 +1002,7 @@
     else if (name === 'hard') targets = R.hardTargets(state.players, p.idx);
     else if (name === 'swap') { var s = R.swapTarget(state.players, p.idx); targets = s === null ? [] : [s]; }
     else if (name === 'shield') targets = p.shield ? [] : [p.idx];
+    else if (name === 'quake') targets = state.players.filter(function (o) { return o !== p; }).map(function (o) { return o.idx; });
     else targets = [p.idx];
     var why = '';
     if (state.powerUsed) why = t('why_used');
@@ -1078,6 +1086,7 @@
     else if (def.target === 'ahead') usePower(name, powerInfo(name, p).targets[0]);
     else if (def.target === 'self') usePower(name, p.idx);
     else if (def.target === 'square') startTrapPick();
+    else if (def.target === 'all') usePower(name, null);
   }
 
   /** A shield soaks up an attack (and is used up). */
@@ -1124,11 +1133,29 @@
       flashCell(extra.house, 'boom');
     } else if (name === 'duel') {
       await runDuel(p, tg);
+    } else if (name === 'quake') {
+      await earthquake(p);
     }
     renderPlayers();
     if (!state || state.winner) return;
     state.phase = 'roll';
     renderPanel();
+  }
+
+  // ------------------------------------------------------------ earthquake
+  // The board shakes and every other pawn is thrown 1–3 houses either way.
+  async function earthquake(p) {
+    log('msg_quake', { name: nameOf(p) }, { toast: true, kind: 'bad' });
+    var area = $('boardArea');
+    retrigger(area, 'quaking');
+    var moves = R.quakeMoves(state.players, p.idx);
+    state.players.forEach(function (o) { if (o !== p && o.shield) blocked(o); });
+    await sleep(reduceMotion ? 50 : 500);
+    await Promise.all(moves.map(function (m) { return slideTo(state.players[m.idx], m.to, 'knocked', 950); }));
+    moves.forEach(function (m) { flashCell(m.to); });
+    await sleep(reduceMotion ? 50 : 500);
+    area.classList.remove('quaking');
+    renderPlayers();
   }
 
   // ------------------------------------------------------------ trap pick
@@ -1151,7 +1178,7 @@
     var cell = e.target.closest('.cell');
     if (!cell) return;
     var h = +cell.dataset.house;
-    if (!R.canPlaceTrap(h, state.traps)) return;
+    if (!R.canPlaceTrap(h, state.traps, state.layout)) return;
     state.powerView = { pick: 'trapTopic', house: h };
     renderPowers();
     $('powerOverlay').classList.remove('hidden');

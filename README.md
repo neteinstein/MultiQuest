@@ -24,7 +24,7 @@ Abra o link no browser do telemóvel e escolha **Instalar app** (Android/Chrome)
   - Acertou → fica na casa e joga outra vez (até 3 vezes seguidas); cada pergunta extra é um nível mais difícil e tem menos 5 segundos (30, 25, 20, 15). Errou → volta para onde estava e passa a vez.
 - Cada jogador escolhe a sua dificuldade: **Fácil, Médio, Difícil ou Génio**. As perguntas (e a matemática) seguem esse nível. No nível Génio, as casas de Ciências trazem sobretudo **Física e Química** (cálculos de velocidade, força, energia, lei de Ohm, massas molares, protões e neutrões, pH, transformações físicas e químicas…).
 - Para ganhar é preciso chegar **exatamente** à casa 75 e acertar a pergunta. Se o dado passar da 75, recua o excesso a partir da 75.
-- Se um jogador chegar a uma casa onde já está outro, **quem lá estava primeiro vai para a casa 25**.
+- Se um jogador chegar a uma casa onde já está outro, **quem lá estava primeiro vai para a casa-refúgio 🛟**.
 
 ### Poderes ⚡
 
@@ -36,7 +36,8 @@ Cada resposta certa dá 1 ⚡ de energia (até 3). Na sua vez, antes de lançar 
 | ❄️ Congelar | 1 | Um jogador fica uma vez sem jogar. Ninguém é congelado duas vezes seguidas. |
 | 🔄 Troca | 2 | Troca de lugar com o jogador logo à frente. |
 | 🔥 Pergunta difícil | 1 | A próxima pergunta de um jogador é um nível acima. |
-| 🛡️ Escudo | 1 | Bloqueia o próximo ataque e evita ir para a casa 25. |
+| 🛡️ Escudo | 1 | Bloqueia o próximo ataque e evita ir para a casa-refúgio. |
+| 🌋 Terramoto | 2 | O tabuleiro treme e todos os outros jogadores são atirados 1 a 3 casas para a frente ou para trás, ao acaso. |
 | 🪤 Armadilha | 1 | Numa casa à escolha: quem lá cair responde a uma pergunta do tema escolhido, um nível acima. |
 | 🕵️ Roubar a pergunta | 1 | Quando alguém erra, o jogador seguinte pode responder à mesma pergunta; se acertar, avança as casas que o outro perdeu. |
 
@@ -44,13 +45,15 @@ Cada pergunta tem 30 segundos; se o tempo acabar, conta como errada.
 
 ### Casas especiais
 
+O tabuleiro é diferente em cada jogo (`makeLayout()` em `js/rules.js`): as casas especiais, o destino dos portais e a casa-refúgio mudam de sítio. A legenda (☰) mostra onde ficaram.
+
 | Casa | Efeito |
 |---|---|
-| 13 | Avança 2 casas e responde à pergunta da nova casa |
-| 55 | Avança 1 casa e responde à pergunta da nova casa |
-| 27 | Joga outra vez |
-| 10 | Fica 1 vez sem jogar |
-| 7, 12, 73 | Teletransporte para a casa 21 |
+| ⏩ +2 / +1 | Avança 2 (ou 1) casas e responde à pergunta da nova casa |
+| 🎲 | Joga outra vez |
+| ⏸️ | Fica 1 vez sem jogar |
+| 🌀 (3 portais) | Teletransporte para a casa com o anel roxo |
+| 🛟 | Casa-refúgio |
 
 ### Avatares
 

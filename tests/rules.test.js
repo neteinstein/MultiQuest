@@ -206,3 +206,48 @@ test('a streak makes each question harder and shorter', () => {
   assert.equal(R.streakLevel(3, 3), 4);
   assert.deepEqual([0, 1, 2, 3].map(R.questionSeconds), [30, 25, 20, 15]);
 });
+
+// A small seeded random generator, so layout tests are repeatable.
+function seeded(seed) {
+  let s = seed >>> 0;
+  return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; };
+}
+
+test('every game gets a different, valid board layout', () => {
+  const seen = new Set();
+  for (let seed = 1; seed <= 300; seed++) {
+    const L = R.makeLayout(seeded(seed));
+    assert.notEqual(L, R.CLASSIC, 'seed ' + seed + ' fell back to the classic board');
+    const houses = Object.keys(L.special).map(Number);
+    assert.equal(houses.length, 7);
+    const types = houses.map((h) => L.special[h].type).sort();
+    assert.deepEqual(types, ['advance', 'advance', 'again', 'skip', 'teleport', 'teleport', 'teleport']);
+    houses.forEach((h) => {
+      assert.ok(h > 0 && h < 75, 'special on ' + h);
+      assert.notEqual(h, L.teleport);
+      assert.notEqual(h, L.refuge);
+      const sp = L.special[h];
+      if (sp.type === 'teleport') assert.equal(sp.to, L.teleport);
+      if (sp.type === 'advance') assert.ok(!L.special[h + sp.by] && h + sp.by < 75, 'advance lands on a special house');
+    });
+    const portals = houses.filter((h) => L.special[h].type === 'teleport');
+    assert.ok(portals.some((h) => h < L.teleport) && portals.some((h) => h > L.teleport), 'portals both ways');
+    const topics = R.assignTopics(seeded(seed), L);
+    houses.forEach((h) => assert.equal(topics[h], undefined));
+    seen.add(JSON.stringify(L));
+  }
+  assert.ok(seen.size > 290, 'layouts repeat too often: ' + seen.size);
+});
+
+test('earthquake throws other players 1-3 houses, never onto 75 or below 0', () => {
+  const players = [{ pos: 10 }, { pos: 0 }, { pos: 74 }, { pos: 40, shield: true }, { pos: 30 }];
+  for (let seed = 1; seed <= 200; seed++) {
+    const moves = R.quakeMoves(players, 0, seeded(seed));
+    assert.ok(moves.every((m) => m.idx !== 0 && m.idx !== 3), 'mover and shielded players stay');
+    moves.forEach((m) => {
+      assert.ok(m.to >= 0 && m.to <= 74, 'to ' + m.to);
+      assert.ok(Math.abs(m.to - m.from) >= 1 && Math.abs(m.to - m.from) <= 3);
+    });
+    assert.equal(moves.length, 3);
+  }
+});

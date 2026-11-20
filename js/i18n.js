@@ -17,6 +17,10 @@
       colorTaken: 'Esta cor já foi escolhida',
       start: 'Começar o jogo',
       powers: 'Poderes',
+      power_quake: 'Terramoto',
+      desc_quake: 'O tabuleiro treme e todos os outros jogadores são atirados 1 a 3 casas para a frente ou para trás, ao acaso.',
+      msg_quake: '{name} provocou um terramoto! 🌋',
+      refuge: 'casa-refúgio',
       streakBadge: '🔥 Série {n} · {s} s',
       msg_powerHint: '{name} ganhou ⚡! Na tua vez, toca em ⚡ Poderes antes de lançar o dado.',
       msg_timeout: 'O tempo acabou!',
@@ -34,7 +38,7 @@
       desc_freeze: 'Um jogador fica uma vez sem jogar. Ninguém é congelado duas vezes seguidas.',
       desc_swap: 'Troca de lugar com o jogador logo à tua frente.',
       desc_hard: 'A próxima pergunta de um jogador é um nível mais difícil.',
-      desc_shield: 'Bloqueia o próximo ataque e protege-te de ir para a casa 25.',
+      desc_shield: 'Bloqueia o próximo ataque e protege-te de ir para a casa-refúgio.',
       desc_trap: 'Põe uma armadilha numa casa: quem lá cair responde a uma pergunta do tema que escolheres, um nível mais difícil.',
       why_energy: 'Precisas de {n} ⚡',
       why_noTarget: 'Ninguém ao alcance',
@@ -51,7 +55,7 @@
       cursed: 'Pergunta difícil',
       msg_shieldUp: '{name} ergue um escudo 🛡️',
       msg_shieldBlock: 'O escudo de {name} bloqueou o ataque! 🛡️',
-      msg_shieldSave: 'O escudo de {name} evitou a casa 25! 🛡️',
+      msg_shieldSave: 'O escudo de {name} evitou a casa-refúgio! 🛡️',
       msg_freeze: '{name} congelou {target} ❄️: perde a próxima vez.',
       msg_swap: '{name} trocou de lugar com {target} 🔄',
       msg_hard: '{name} preparou uma pergunta difícil para {target} 🔥',
@@ -128,20 +132,20 @@
       special_advance: '+{n}',
       special_again: 'Joga outra vez',
       special_skip: '1 vez sem jogar',
-      special_teleport: '→ 21',
+      special_teleport: '→ {to}',
 
       msg_rolled: '{name} tirou {n}.',
       msg_bounce: 'Passou da casa 75! Recua {n}.',
       msg_advance: 'Casa {house}: avança {n} e responde!',
-      msg_again: 'Casa 27: {name} joga outra vez!',
-      msg_skip: 'Casa 10: {name} fica uma vez sem jogar.',
-      msg_teleport: 'Casa {house}: teletransporte para a casa 21!',
+      msg_again: 'Casa {house}: {name} joga outra vez!',
+      msg_skip: 'Casa {house}: {name} fica uma vez sem jogar.',
+      msg_teleport: 'Casa {house}: teletransporte para a casa {to}!',
       msg_correct: 'Certo! {name} fica na casa {n}.',
       msg_bonus: 'Certo! {name} joga outra vez ({k}/{max}).',
       msg_bonusMax: '{name} já jogou {max} vezes extra seguidas — passa a vez.',
       msg_wrong: 'Errado! {name} volta para a casa {n}.',
       msg_rightWas: 'A resposta certa era: {a}',
-      msg_collision: '{victim} estava na casa {n} primeiro e vai para a casa 25!',
+      msg_collision: '{victim} estava na casa {n} primeiro e vai para a casa-refúgio {refuge}!',
       msg_skipped: '{name} perde a vez.',
       msg_turn: 'Vez de {name}.',
       msg_win: '{name} venceu!',
@@ -158,15 +162,16 @@
         '<li>Tens 30 segundos para responder; se o tempo acabar, conta como errado.</li>' +
         '<li>Cada jogador escolhe a sua dificuldade (Fácil, Médio, Difícil ou Génio) e recebe perguntas desse nível. No nível Génio, as casas de Ciências trazem sobretudo perguntas de Física e Química.</li>' +
         '<li>Para ganhar é preciso chegar exatamente à casa 75 e acertar a pergunta. Se o dado passar da 75, recua o excesso a partir da 75.</li>' +
-        '<li>Se chegar a uma casa onde já está outro jogador, quem lá estava primeiro vai para a casa 25.</li>' +
+        '<li>Se chegar a uma casa onde já está outro jogador, quem lá estava primeiro vai para a casa-refúgio 🛟.</li>' +
         '</ul>' +
         '<h3>Casas especiais</h3>' +
+        '<p>O tabuleiro é diferente em cada jogo: as casas especiais mudam de sítio. Vê onde estão em ☰ → Legenda.</p>' +
         '<ul>' +
-        '<li><b>13</b> — avança 2 casas e responde à pergunta.</li>' +
-        '<li><b>55</b> — avança 1 casa e responde à pergunta.</li>' +
-        '<li><b>27</b> — joga outra vez.</li>' +
-        '<li><b>10</b> — fica 1 vez sem jogar.</li>' +
-        '<li><b>7, 12 e 73</b> — teletransporte para a casa 21.</li>' +
+        '<li><b>⏩ +2 / +1</b> — avança 2 (ou 1) casas e responde à pergunta.</li>' +
+        '<li><b>🎲</b> — joga outra vez.</li>' +
+        '<li><b>⏸️</b> — fica 1 vez sem jogar.</li>' +
+        '<li><b>🌀</b> — portal: teletransporte para a casa com o anel roxo.</li>' +
+        '<li><b>🛟</b> — casa-refúgio: quem é apanhado por outro jogador vai para aqui.</li>' +
         '</ul>' +
         '<h3>Poderes ⚡</h3>' +
         '<p>Cada resposta certa dá 1 ⚡ de energia (guardas até 3). Na tua vez, antes de lançar o dado, podes usar um poder:</p>' +
@@ -175,7 +180,8 @@
         '<li><b>❄️ Congelar (1 ⚡)</b> — um jogador fica uma vez sem jogar. Ninguém é congelado duas vezes seguidas.</li>' +
         '<li><b>🔄 Troca (2 ⚡)</b> — trocas de lugar com o jogador logo à tua frente.</li>' +
         '<li><b>🔥 Pergunta difícil (1 ⚡)</b> — a próxima pergunta de um jogador é um nível acima.</li>' +
-        '<li><b>🛡️ Escudo (1 ⚡)</b> — bloqueia o próximo ataque e protege-te de ir para a casa 25.</li>' +
+        '<li><b>🛡️ Escudo (1 ⚡)</b> — bloqueia o próximo ataque e protege-te de ir para a casa-refúgio.</li>' +
+        '<li><b>🌋 Terramoto (2 ⚡)</b> — o tabuleiro treme e todos os outros jogadores são atirados 1 a 3 casas para a frente ou para trás, ao acaso.</li>' +
         '<li><b>🪤 Armadilha (1 ⚡)</b> — escolhes uma casa e um tema. Quem lá cair a seguir responde a uma pergunta desse tema, um nível acima.</li>' +
         '<li><b>🕵️ Roubar a pergunta (1 ⚡)</b> — quando alguém erra, o jogador seguinte pode responder à mesma pergunta. Se acertar, avança as casas que o outro perdeu.</li>' +
         '</ul>' +
@@ -196,6 +202,10 @@
       colorTaken: 'This colour is already taken',
       start: 'Start game',
       powers: 'Powers',
+      power_quake: 'Earthquake',
+      desc_quake: 'The board shakes and every other player is thrown 1–3 houses forwards or backwards at random.',
+      msg_quake: '{name} set off an earthquake! 🌋',
+      refuge: 'refuge house',
       streakBadge: '🔥 Streak {n} · {s} s',
       msg_powerHint: '{name} earned ⚡! On your turn, tap ⚡ Powers before you roll.',
       msg_timeout: "Time's up!",
@@ -213,7 +223,7 @@
       desc_freeze: 'A player misses their next turn. Nobody can be frozen twice in a row.',
       desc_swap: 'Swap places with the player just ahead of you.',
       desc_hard: "A player's next question is one level harder.",
-      desc_shield: 'Blocks the next attack and saves you from being sent to square 25.',
+      desc_shield: 'Blocks the next attack and saves you from being sent to the refuge square.',
       desc_trap: 'Set a trap on a square: whoever lands there next answers a question on the subject you pick, one level harder.',
       why_energy: 'Needs {n} ⚡',
       why_noTarget: 'Nobody in range',
@@ -230,7 +240,7 @@
       cursed: 'Hard question',
       msg_shieldUp: '{name} raises a shield 🛡️',
       msg_shieldBlock: "{name}'s shield blocked the attack! 🛡️",
-      msg_shieldSave: "{name}'s shield saved them from house 25! 🛡️",
+      msg_shieldSave: "{name}'s shield saved them from the refuge square! 🛡️",
       msg_freeze: '{name} froze {target} ❄️: they miss their next turn.',
       msg_swap: '{name} swapped places with {target} 🔄',
       msg_hard: '{name} set up a hard question for {target} 🔥',
@@ -307,20 +317,20 @@
       special_advance: '+{n}',
       special_again: 'Play again',
       special_skip: 'Miss 1 turn',
-      special_teleport: '→ 21',
+      special_teleport: '→ {to}',
 
       msg_rolled: '{name} rolled {n}.',
       msg_bounce: 'Went past house 75! Back {n}.',
       msg_advance: 'House {house}: move {n} forward and answer!',
-      msg_again: 'House 27: {name} plays again!',
-      msg_skip: 'House 10: {name} misses the next turn.',
-      msg_teleport: 'House {house}: teleport to house 21!',
+      msg_again: 'House {house}: {name} plays again!',
+      msg_skip: 'House {house}: {name} misses the next turn.',
+      msg_teleport: 'House {house}: teleport to house {to}!',
       msg_correct: 'Correct! {name} stays on house {n}.',
       msg_bonus: 'Correct! {name} rolls again ({k}/{max}).',
       msg_bonusMax: '{name} has had {max} extra rolls in a row — next player.',
       msg_wrong: 'Wrong! {name} goes back to house {n}.',
       msg_rightWas: 'The right answer was: {a}',
-      msg_collision: '{victim} was on house {n} first and goes to house 25!',
+      msg_collision: '{victim} was on house {n} first and goes to the refuge, house {refuge}!',
       msg_skipped: '{name} misses this turn.',
       msg_turn: '{name}’s turn.',
       msg_win: '{name} won!',
@@ -337,15 +347,16 @@
         '<li>You have 30 seconds to answer; running out of time counts as wrong.</li>' +
         '<li>Each player picks their own difficulty (Easy, Medium, Hard or Genius) and gets questions at that level. At Genius level, Science squares mostly ask Physics and Chemistry.</li>' +
         '<li>To win you must land exactly on house 75 and answer correctly. If the roll goes past 75 you move back the excess from 75.</li>' +
-        '<li>If you land on a house where another player already is, the player who was there first goes to house 25.</li>' +
+        '<li>If you land on a house where another player already is, the player who was there first goes to the refuge house 🛟.</li>' +
         '</ul>' +
         '<h3>Special houses</h3>' +
+        '<p>The board is different every game: the special houses move around. See where they are in ☰ → Legend.</p>' +
         '<ul>' +
-        '<li><b>13</b> — move 2 forward, then answer the question.</li>' +
-        '<li><b>55</b> — move 1 forward, then answer the question.</li>' +
-        '<li><b>27</b> — play again.</li>' +
-        '<li><b>10</b> — miss 1 turn.</li>' +
-        '<li><b>7, 12 and 73</b> — teleport to house 21.</li>' +
+        '<li><b>⏩ +2 / +1</b> — move 2 (or 1) forward, then answer the question.</li>' +
+        '<li><b>🎲</b> — play again.</li>' +
+        '<li><b>⏸️</b> — miss 1 turn.</li>' +
+        '<li><b>🌀</b> — portal: teleport to the house with the purple ring.</li>' +
+        '<li><b>🛟</b> — refuge: a player who gets caught by another is sent here.</li>' +
         '</ul>' +
         '<h3>Powers ⚡</h3>' +
         '<p>Every right answer earns 1 ⚡ energy (you can bank up to 3). On your turn, before you roll, you can use one power:</p>' +
@@ -354,7 +365,8 @@
         '<li><b>❄️ Freeze (1 ⚡)</b> — a player misses their next turn. Nobody can be frozen twice in a row.</li>' +
         '<li><b>🔄 Swap (2 ⚡)</b> — trade places with the player just ahead of you.</li>' +
         '<li><b>🔥 Hard question (1 ⚡)</b> — a player\'s next question is one level harder.</li>' +
-        '<li><b>🛡️ Shield (1 ⚡)</b> — blocks the next attack and saves you from being sent to house 25.</li>' +
+        '<li><b>🛡️ Shield (1 ⚡)</b> — blocks the next attack and saves you from being sent to the refuge.</li>' +
+        '<li><b>🌋 Earthquake (2 ⚡)</b> — the board shakes and every other player is thrown 1–3 houses forwards or backwards at random.</li>' +
         '<li><b>🪤 Trap (1 ⚡)</b> — pick a square and a subject. Whoever lands there next answers a question on that subject, one level harder.</li>' +
         '<li><b>🕵️ Steal the question (1 ⚡)</b> — when someone answers wrong, the next player can answer the same question. Get it right and you move forward the squares they lost.</li>' +
         '</ul>' +
