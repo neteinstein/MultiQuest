@@ -55,6 +55,8 @@ async function checkFits(page, label) {
 
   // 3) Setup rules: colours must be unique.
   const page = await browser.newPage({ viewport: { width: 1280, height: 800 }, reducedMotion: 'reduce' });
+  // Shorter pauses between moves, so a long game still fits the time budget.
+  await page.addInitScript(() => { window.MQ_TEST_SPEED = 0.1; });
   page.on('pageerror', (e) => errors.push(e.message));
   page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
   await page.goto(URL);
@@ -73,7 +75,9 @@ async function checkFits(page, label) {
   const timeMismatch = [];
   const rnd = (n) => Math.floor(Math.random() * n);
   const start = Date.now();
-  while (Date.now() - start < 300000) {
+  // A full game with powers can run long (duels and swaps push the leader
+  // back), so the bot uses a power a quarter of the time and gets 8 minutes.
+  while (Date.now() - start < 480000) {
     const st = await page.evaluate(() => {
       const s = MQGame.state;
       return {
@@ -109,10 +113,19 @@ async function checkFits(page, label) {
       const targets = await page.$$('.target-btn');
       const topics = await page.$$('.topic-pick');
       const cards = await page.$$('.power-card:not(:disabled)');
-      if (targets.length) await targets[rnd(targets.length)].click();
+      if (targets.length) {
+        // Prefer targets without a shield, so attacks actually land.
+        const open = [];
+        for (const t of targets) if (!(await t.innerText()).includes('🛡')) open.push(t);
+        const pool = open.length ? open : targets;
+        await pool[rnd(pool.length)].click();
+      }
       else if (topics.length) await topics[rnd(topics.length)].click();
       else if (cards.length) {
-        const card = cards[rnd(cards.length)];
+        // Try each power at least once, then any.
+        const kinds = await Promise.all(cards.map((c) => c.getAttribute('data-power')));
+        const fresh = cards.filter((_, k) => !powersUsed.has(kinds[k]));
+        const card = fresh.length ? fresh[rnd(fresh.length)] : cards[rnd(cards.length)];
         powersUsed.add(await card.getAttribute('data-power'));
         await card.click();
       } else await page.click('[data-act="close"]');
@@ -120,7 +133,7 @@ async function checkFits(page, label) {
       const cells = await page.$$('.cell.trappable');
       await cells[rnd(cells.length)].click();
     } else if (st.phase === 'roll') {
-      if (st.canPower && Math.random() < 0.6) { await page.click('#powerBtn'); continue; }
+      if (st.canPower && Math.random() < 0.25) { await page.click('#powerBtn'); continue; }
       turns++;
       if (turns === 10 && !switched) { await page.click('.lang-btn[data-lang=en]'); switched = true; }
       if (turns === 12 && !drawerChecked) {

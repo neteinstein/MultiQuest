@@ -16,7 +16,8 @@
   var SPECIAL_ICON = { advance: '⏩', again: '🎲', skip: '⏸️', teleport: '🌀' };
 
   var $ = function (id) { return document.getElementById(id); };
-  var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+  // Automated tests may set window.MQ_TEST_SPEED (e.g. 0.1) to shorten the pauses between moves.
+  var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms * (window.MQ_TEST_SPEED || 1)); }); };
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ------------------------------------------------------------------ i18n
