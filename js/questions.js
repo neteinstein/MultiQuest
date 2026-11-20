@@ -8,6 +8,10 @@
 (function (root) {
   'use strict';
 
+  // Fact-based generators (js/generators.js) supply most questions; the
+  // hand-written banks below are mixed in.
+  var G = (typeof module !== 'undefined' && module.exports) ? require('./generators.js') : root.MQGenerators;
+
   // ---------------------------------------------------------------- helpers
   function rnd(rand, min, max) { return min + Math.floor(rand() * (max - min + 1)); }
   function pick(rand, arr) { return arr[Math.floor(rand() * arr.length)]; }
@@ -343,16 +347,6 @@
       'What is the plural of the Portuguese word "' + p[0] + '"?'));
   });
 
-  // Antonyms: [word, opposite]
-  var ANTONYMS = [
-    ['alto', 'baixo'], ['rápido', 'lento'], ['alegre', 'triste'], ['grande', 'pequeno'], ['quente', 'frio'],
-    ['claro', 'escuro'], ['cheio', 'vazio'], ['novo', 'velho'], ['forte', 'fraco'], ['rico', 'pobre'],
-    ['fácil', 'difícil'], ['aberto', 'fechado'], ['limpo', 'sujo'], ['longe', 'perto'], ['cedo', 'tarde'],
-    ['gordo', 'magro'], ['subir', 'descer'], ['entrar', 'sair'], ['ganhar', 'perder'], ['comprar', 'vender'],
-    ['acender', 'apagar'], ['dia', 'noite'], ['verdade', 'mentira'], ['início', 'fim'], ['doce', 'amargo'],
-    ['duro', 'mole'], ['molhado', 'seco'], ['largo', 'estreito'], ['pesado', 'leve'], ['corajoso', 'medroso']
-  ];
-
   // ---------------------------------------------------------------- english
   var ENGLISH = [
     S('Qual é o passado de "go"?', ['went', 'goed', 'gone', 'goes'], 'What is the past simple of "go"?'),
@@ -392,22 +386,6 @@
   ];
 
   // Vocabulary: [portuguese, english]
-  var VOCAB = [
-    ['cão', 'dog'], ['gato', 'cat'], ['casa', 'house'], ['livro', 'book'], ['maçã', 'apple'], ['água', 'water'],
-    ['sol', 'sun'], ['lua', 'moon'], ['escola', 'school'], ['amigo', 'friend'], ['carro', 'car'], ['cavalo', 'horse'],
-    ['pássaro', 'bird'], ['peixe', 'fish'], ['árvore', 'tree'], ['flor', 'flower'], ['mar', 'sea'], ['céu', 'sky'],
-    ['pão', 'bread'], ['leite', 'milk'], ['queijo', 'cheese'], ['mesa', 'table'], ['cadeira', 'chair'], ['janela', 'window'],
-    ['porta', 'door'], ['vermelho', 'red'], ['azul', 'blue'], ['verde', 'green'], ['amarelo', 'yellow'], ['preto', 'black'],
-    ['branco', 'white'], ['irmão', 'brother'], ['irmã', 'sister'], ['pai', 'father'], ['mãe', 'mother'], ['avó', 'grandmother'],
-    ['chuva', 'rain'], ['neve', 'snow'], ['vento', 'wind'], ['comboio', 'train'], ['sapato', 'shoe'], ['cozinha', 'kitchen'],
-    ['quarto', 'bedroom'], ['segunda-feira', 'Monday'], ['domingo', 'Sunday'], ['inverno', 'winter'], ['verão', 'summer'],
-    ['outono', 'autumn'], ['primavera', 'spring'], ['coelho', 'rabbit'], ['urso', 'bear'], ['ovelha', 'sheep'], ['vaca', 'cow'],
-    ['porco', 'pig'], ['galinha', 'chicken'], ['morango', 'strawberry'], ['cenoura', 'carrot'], ['mão', 'hand'], ['cabeça', 'head'],
-    ['olho', 'eye'], ['orelha', 'ear'], ['perna', 'leg'], ['feliz', 'happy'], ['triste', 'sad'], ['grande', 'big'],
-    ['pequeno', 'small'], ['rápido', 'fast'], ['lento', 'slow'], ['quente', 'hot'], ['frio', 'cold'], ['ponte', 'bridge'],
-    ['castelo', 'castle'], ['navio', 'ship'], ['estrela', 'star'], ['nuvem', 'cloud'], ['montanha', 'mountain'], ['rio', 'river']
-  ];
-
   // ------------------------------------------------------------- levels
   // Difficulty per question: 1 easy, 2 medium, 3 hard, 4 genius (digit per index, in order).
   function tag(list, levels) {
@@ -522,40 +500,6 @@
     var e = list[idx];
     var answers = e.ptA.map(function (a, i) { return { pt: a, en: e.enA[i] }; });
     return build(topic + '-s-' + idx, topic, { pt: e.ptQ, en: e.enQ }, answers, rand);
-  }
-
-  function threeOthers(rand, list, exclude) {
-    var pool = shuffle(list.filter(function (x) { return x !== exclude; }), rand);
-    var out = [];
-    for (var i = 0; i < pool.length && out.length < 3; i++) if (out.indexOf(pool[i]) < 0) out.push(pool[i]);
-    return out;
-  }
-
-  function genAntonym(rand) {
-    var i = rnd(rand, 0, ANTONYMS.length - 1);
-    var pair = ANTONYMS[i];
-    var flip = rand() < 0.5;
-    var word = flip ? pair[1] : pair[0];
-    var ans = flip ? pair[0] : pair[1];
-    var all = [];
-    ANTONYMS.forEach(function (p) { all.push(p[0], p[1]); });
-    all = all.filter(function (w) { return w !== word; });
-    var wrong = threeOthers(rand, all, ans);
-    return build('pt-ant-' + word, 'portuguese',
-      { pt: 'Qual é o antónimo (contrário) de "' + word + '"?', en: 'What is the antonym (opposite) of the Portuguese word "' + word + '"?' },
-      [both(ans)].concat(wrong.map(both)), rand);
-  }
-
-  function genVocab(rand) {
-    var i = rnd(rand, 0, VOCAB.length - 1);
-    var toEnglish = rand() < 0.5;
-    var pair = VOCAB[i];
-    var col = toEnglish ? 1 : 0;
-    var wrong = threeOthers(rand, VOCAB.map(function (p) { return p[col]; }), pair[col]);
-    var q = toEnglish
-      ? { pt: 'Como se diz "' + pair[0] + '" em inglês?', en: 'What is the Portuguese word "' + pair[0] + '" in English?' }
-      : { pt: 'O que significa "' + pair[1] + '" em português?', en: 'What does "' + pair[1] + '" mean in Portuguese?' };
-    return build('en-voc-' + i + (toEnglish ? '-e' : '-p'), 'english', q, [both(pair[col])].concat(wrong.map(both)), rand);
   }
 
   // Wrong numeric options near the right one.
@@ -725,7 +669,9 @@
   }
 
   var STATIC = { history: HISTORY, science: SCIENCE, portuguese: PORTUGUESE, english: ENGLISH };
-  var GENERATOR = { portuguese: genAntonym, english: genVocab };
+  // Share of questions taken from the hand-written banks when they still have
+  // unused ones at the requested level.
+  var STATIC_SHARE = 0.25;
 
   Dealer.prototype._fromBank = function (topic, level) {
     var list = STATIC[topic];
@@ -746,13 +692,30 @@
     return this._fromBank(topic, level);
   };
 
+  /** An unused hand-written question at exactly `level`, or null. */
+  Dealer.prototype._fromBankExact = function (topic, level) {
+    var list = STATIC[topic];
+    var self = this;
+    var c = [];
+    list.forEach(function (e, i) { if (e.lvl === level && !self.used[topic + '-s-' + i]) c.push(i); });
+    return c.length ? fromStatic(topic, list, pick(this.rand, c), this.rand) : null;
+  };
+
   Dealer.prototype.next = function (topic, level) {
     level = Math.max(1, Math.min(4, level || 2));
     var q = null;
-    for (var tries = 0; tries < 60; tries++) {
-      if (topic === 'math') q = genMath(this.rand, level);
-      else if (GENERATOR[topic] && level <= 2 && this.rand() < 0.35) q = GENERATOR[topic](this.rand);
-      else q = this._fromBank(topic, level);
+    // Try the requested level first; if it has run dry, the nearest levels.
+    var order = [level, level - 1, level + 1, level - 2, level + 2, level - 3].filter(function (l) { return l >= 1 && l <= 4; });
+    for (var k = 0; k < order.length; k++) {
+      for (var tries = 0; tries < 40; tries++) {
+        if (topic === 'math') q = genMath(this.rand, order[k]);
+        else {
+          q = this.rand() < STATIC_SHARE ? this._fromBankExact(topic, order[k]) : null;
+          if (!q) q = G.make(topic, order[k], this.rand);
+          if (!q) q = this._fromBank(topic, order[k]);
+        }
+        if (!this.used[q.key]) break;
+      }
       if (!this.used[q.key]) break;
     }
     q.level = level;
@@ -763,7 +726,7 @@
   var api = {
     Dealer: Dealer,
     genMath: genMath,
-    banks: { history: HISTORY, science: SCIENCE, portuguese: PORTUGUESE, english: ENGLISH, vocab: VOCAB, antonyms: ANTONYMS }
+    banks: { history: HISTORY, science: SCIENCE, portuguese: PORTUGUESE, english: ENGLISH }
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.MQQuestions = api;

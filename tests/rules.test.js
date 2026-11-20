@@ -84,16 +84,17 @@ test('static banks are well formed', () => {
   });
 });
 
-test('dealer prefers the requested level', () => {
+test('dealer deals the requested level', () => {
   const d = new Q.Dealer();
-  for (let lvl = 1; lvl <= 4; lvl++) {
-    for (let i = 0; i < 5; i++) {
-      const q = d.next('history', lvl);
-      const idx = +q.key.split('-s-')[1];
-      assert.equal(Q.banks.history[idx].lvl, lvl, 'history level ' + lvl);
-      assert.equal(q.level, lvl);
+  ['history', 'science', 'portuguese', 'english'].forEach((topic) => {
+    for (let lvl = 1; lvl <= 4; lvl++) {
+      for (let i = 0; i < 25; i++) {
+        const q = d.next(topic, lvl);
+        assert.equal(q.level, lvl);
+        if (q.key.includes('-s-')) assert.equal(Q.banks[topic][+q.key.split('-s-')[1]].lvl, lvl, q.key);
+      }
     }
-  }
+  });
 });
 
 test('dealer never repeats a question within a game', () => {
