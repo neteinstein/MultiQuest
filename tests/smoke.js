@@ -13,10 +13,10 @@ async function checkFits(page, label) {
     const d = document.documentElement;
     const board = document.getElementById('board').getBoundingClientRect();
     const bar = document.getElementById('turnCard').getBoundingClientRect();
-    return { sw: d.scrollWidth, sh: d.scrollHeight, w: innerWidth, h: innerHeight, boardRight: board.right, boardBottom: board.bottom, barTop: bar.top, barBottom: bar.bottom };
+    return { sw: d.scrollWidth, sh: d.scrollHeight, w: innerWidth, h: innerHeight, boardRight: board.right, boardBottom: board.bottom, barTop: bar.top, barBottom: bar.bottom, barLeft: bar.left };
   });
-  const ok = r.sw <= r.w && r.sh <= r.h && r.boardRight <= r.w && r.boardBottom <= r.barTop && r.barBottom <= r.h;
-  if (ok) pass(label + ': board and bar fit without scrolling');
+  const ok = r.sw <= r.w && r.sh <= r.h && r.boardRight <= r.w && (r.boardBottom <= r.barTop || r.boardRight <= r.barLeft) && r.barBottom <= r.h;
+  if (ok) pass(label + ': board and bar fit without scrolling or overlapping');
   else fail(label + ': layout overflows ' + JSON.stringify(r));
 }
 
@@ -25,7 +25,7 @@ async function checkFits(page, label) {
   const errors = [];
 
   // 1) Layout fits at common screen sizes.
-  for (const [w, h, label] of [[1400, 900, 'desktop'], [390, 844, 'phone'], [844, 390, 'phone landscape']]) {
+  for (const [w, h, label] of [[1400, 900, 'desktop'], [2560, 1440, '1440p'], [3840, 2160, '4K'], [768, 1024, 'tablet'], [390, 844, 'phone'], [320, 568, 'small phone'], [844, 390, 'phone landscape'], [667, 375, 'small phone landscape']]) {
     const page = await browser.newPage({ viewport: { width: w, height: h } });
     page.on('pageerror', (e) => errors.push(e.message));
     await page.goto(URL);
@@ -37,7 +37,7 @@ async function checkFits(page, label) {
   }
 
   // 2) Setup is a sideways carousel: it fits a phone screen and Next moves on one player.
-  for (const [w, h, label] of [[390, 844, 'phone'], [375, 667, 'small phone']]) {
+  for (const [w, h, label] of [[390, 844, 'phone'], [375, 667, 'small phone'], [320, 568, 'tiny phone'], [844, 390, 'phone landscape'], [2560, 1440, '1440p']]) {
     const page = await browser.newPage({ viewport: { width: w, height: h }, reducedMotion: 'reduce' });
     page.on('pageerror', (e) => errors.push(e.message));
     await page.goto(URL);
@@ -49,7 +49,8 @@ async function checkFits(page, label) {
     await page.click('#nextPlayer');
     await page.waitForTimeout(100);
     const v = await inView();
-    v.length === 1 && v[0] === 1 ? pass(label + ': Next shows the next player') : fail(label + ': after Next the cards in view are ' + v);
+    // Wide screens show several players at once; there Next just moves the row on.
+    if (w < 668) v.length === 1 && v[0] === 1 ? pass(label + ': Next shows the next player') : fail(label + ': after Next the cards in view are ' + v);
     await page.close();
   }
 
