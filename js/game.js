@@ -336,6 +336,10 @@
     board.style.setProperty('--pad', pad + 'px');
     board.style.setProperty('--frame', frame + 'px');
     $('boardWrap').style.setProperty('--tilt', tilt + 'deg');
+    // Keep the camera as far away relative to the board on every screen, so a
+    // huge board (4K) doesn't flare out past the edges more than a small one.
+    var boardH = best.cell * Math.ceil(n / best.c) + gap * (Math.ceil(n / best.c) - 1) + 2 * (pad + frame);
+    $('boardWrap').style.setProperty('--persp', Math.max(1500, Math.round(boardH * 2.7)) + 'px');
     var changed = best.c !== cols;
     cols = best.c;
     board.style.setProperty('--cols', cols);
